@@ -3,8 +3,8 @@
 #  https://opensource.org/license/apache-2-0.
 
 site_name: ESA DTE-S2GOS Client
-repo_url: https://github.com/bcdev/s2gos-client
-repo_name: bcdev/s2gos-client
+repo_url: https://github.com/s2gos-dev/s2gos-client
+repo_name: s2gos-dev/s2gos-client
 
 copyright: Copyright &copy; 2025 ESA DTE-S2GOS Team
 
@@ -42,7 +42,7 @@ markdown_extensions:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/bcdev/s2gos-client
+      link: https://github.com/s2gos-dev/s2gos-client
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/s2gos/
 

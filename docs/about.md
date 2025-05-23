@@ -3,25 +3,25 @@
 ## Changelog
 
 You can find the complete S2GOS client's changelog 
-[here](https://github.combcdev/s2gos-client/blob/main/CHANGES.md). 
+[here](https://github.com/s2gos-dev/s2gos-client/blob/main/CHANGES.md). 
 
 ## Reporting
 
 If you have suggestions, ideas, feature requests, or if you have identified
 a malfunction or error, then please 
-[post an issue](https://github.combcdev/s2gos-client/issues). 
+[post an issue](https://github.com/s2gos-dev/s2gos-client/issues). 
 
 ## Contributions
 
 The S2GOS client project welcomes contributions of any form as long as you 
 respect our 
-[code of conduct](https://github.combcdev/s2gos-client/blob/main/CODE_OF_CONDUCT.md)
+[code of conduct](https://github.com/s2gos-dev/s2gos-client/blob/main/CODE_OF_CONDUCT.md)
 and follow our 
-[contribution guide](https://github.combcdev/s2gos-client/blob/main/CONTRIBUTING.md).
+[contribution guide](https://github.com/s2gos-dev/s2gos-client/blob/main/CONTRIBUTING.md).
 
 If you'd like to submit code or documentation changes, we ask you to provide a 
 pull request (PR) 
-[here](https://github.combcdev/s2gos-client/pulls). 
+[here](https://github.com/s2gos-dev/s2gos-client/pulls). 
 For code and configuration changes, your PR must be linked to a 
 corresponding issue. 
 

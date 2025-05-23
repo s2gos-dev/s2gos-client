@@ -97,7 +97,7 @@ profile = "black"
 exclude = ["**/*.ipynb"]
 
 [project.urls]
-Documentation = "https://bcdev.github.io/s2gos"
-Repository = "https://github.com/bcdev/s2gos-client"
-Changelog = "https://github.com/bcdev/s2gos-client/blob/main/CHANGES.md"
-Issues = "https://github.com/bcdev/s2gos-client/issues"
+Documentation = "https://s2gos-dev.github.io/s2gos-client"
+Repository = "https://github.com/s2gos-dev/s2gos-client"
+Changelog = "https://github.com/s2gos-dev/s2gos-client/blob/main/CHANGES.md"
+Issues = "https://github.com/s2gos-dev/s2gos-client/issues"
