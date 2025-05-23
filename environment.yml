@@ -1,0 +1,25 @@
+name: s2gos
+channels:
+  - conda-forge
+dependencies:
+  - python >=3.10
+  # Dependencies
+  - click
+  - ipyleaflet
+  - ipywidgets
+  - ipywidgets_bokeh
+  - jupyter
+  - notebook
+  - panel
+  - tornado >=6.1
+  - voila
+  # Development Dependencies
+  - isort
+  - mkdocs
+  - mkdocs-autorefs
+  - mkdocs-material
+  - mkdocstrings
+  - mkdocstrings-python
+  - pytest
+  - pytest-cov
+  - ruff
