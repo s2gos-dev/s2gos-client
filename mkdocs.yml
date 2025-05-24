@@ -10,6 +10,7 @@ copyright: Copyright &copy; 2025 ESA DTE-S2GOS Team
 
 nav:
   - Overview: index.md
+  - CLI: cli.md
   - About: about.md
 
 theme:

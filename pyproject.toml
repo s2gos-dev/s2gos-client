@@ -48,6 +48,7 @@ dependencies = [
   "jupyter",
   "notebook",
   "panel",
+  "pyyaml",
   "tornado >=6.1",
   "voila",
 ]

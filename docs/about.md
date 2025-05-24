@@ -75,6 +75,13 @@ mkdocs serve
 mkdocs gh-deploy
 ```
 
+After changing the CLI code, always update its documentation `docs/cli.md` 
+by running
+
+```bash
+python docs/scripts/gen-cli-md.py
+```
+
 ## License
 
 The S2GOS client is open source made available under the terms and conditions of the 
