@@ -9,21 +9,25 @@
       
       
       
+        <link rel="prev" href="..">
       
       
-      <link rel="icon" href="/assets/logo.ico">
+        <link rel="next" href="../about/">
+      
+      
+      <link rel="icon" href="../assets/logo.ico">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
     
     
       
-        <title>ESA DTE-S2GOS Client</title>
+        <title>CLI - ESA DTE-S2GOS Client</title>
       
     
     
-      <link rel="stylesheet" href="/assets/stylesheets/main.342714a4.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.342714a4.min.css">
       
         
-        <link rel="stylesheet" href="/assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -42,9 +46,9 @@
       
     
     
-      <link rel="stylesheet" href="/assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("/",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -69,6 +73,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#cli-reference" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -81,9 +90,9 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="/." title="ESA DTE-S2GOS Client" class="md-header__button md-logo" aria-label="ESA DTE-S2GOS Client" data-md-component="logo">
+    <a href=".." title="ESA DTE-S2GOS Client" class="md-header__button md-logo" aria-label="ESA DTE-S2GOS Client" data-md-component="logo">
       
-  <img src="/assets/logo.png" alt="logo">
+  <img src="../assets/logo.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -100,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              
+              CLI
             
           </span>
         </div>
@@ -216,9 +225,9 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="/." title="ESA DTE-S2GOS Client" class="md-nav__button md-logo" aria-label="ESA DTE-S2GOS Client" data-md-component="logo">
+    <a href=".." title="ESA DTE-S2GOS Client" class="md-nav__button md-logo" aria-label="ESA DTE-S2GOS Client" data-md-component="logo">
       
-  <img src="/assets/logo.png" alt="logo">
+  <img src="../assets/logo.png" alt="logo">
 
     </a>
     ESA DTE-S2GOS Client
@@ -245,7 +254,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/." class="md-nav__link">
+      <a href=".." class="md-nav__link">
         
   
   
@@ -264,10 +273,32 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="/cli/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    CLI
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -278,6 +309,122 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#main-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      Main Command
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Commands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configure" class="md-nav__link">
+    <span class="md-ellipsis">
+      configure
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      get-template
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list-templates" class="md-nav__link">
+    <span class="md-ellipsis">
+      list-templates
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validate-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      validate-request
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#submit-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      submit-request
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cancel-jobs" class="md-nav__link">
+    <span class="md-ellipsis">
+      cancel-jobs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#poll-jobs" class="md-nav__link">
+    <span class="md-ellipsis">
+      poll-jobs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      get-results
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -289,7 +436,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/about/" class="md-nav__link">
+      <a href="../about/" class="md-nav__link">
         
   
   
@@ -321,6 +468,112 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#main-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      Main Command
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Commands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configure" class="md-nav__link">
+    <span class="md-ellipsis">
+      configure
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      get-template
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list-templates" class="md-nav__link">
+    <span class="md-ellipsis">
+      list-templates
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validate-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      validate-request
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#submit-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      submit-request
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cancel-jobs" class="md-nav__link">
+    <span class="md-ellipsis">
+      cancel-jobs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#poll-jobs" class="md-nav__link">
+    <span class="md-ellipsis">
+      poll-jobs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      get-results
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -332,8 +585,122 @@
             <div class="md-content" data-md-component="content">
               <article class="md-content__inner md-typeset">
                 
-  <h1>404 - Not found</h1>
+                  
 
+
+  
+  
+
+
+<h1 id="cli-reference">CLI Reference</h1>
+<h2 id="main-command">Main Command</h2>
+<div class="highlight"><pre><span></span><code>Usage: s2gos [OPTIONS] COMMAND [ARGS]...
+
+  Client tool for the ESA synthetic scene generator service DTE-S2GOS.
+
+  The tool provides commands for managing processing request templates,
+  processing requests, processing jobs, and gets processing results.
+
+  You can use shorter command name aliases, e.g., use command name &quot;vr&quot; instead
+  of &quot;validate-request&quot;, or &quot;lt&quot; instead of &quot;list-templates&quot;.
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  configure         Configure the S2GOS client.
+  get-template      Get a processing request template.
+  list-templates    List available processing request templates.
+  validate-request  Validate a processing request.
+  submit-request    Submit a processing request.
+  cancel-jobs       Cancel running processing jobs.
+  poll-jobs         Poll the status of processing jobs.
+  get-results       Get processing results.
+</code></pre></div>
+<h2 id="commands">Commands</h2>
+<h3 id="configure"><code>configure</code></h3>
+<div class="highlight"><pre><span></span><code>Usage: s2gos configure [OPTIONS]
+
+  Configure the S2GOS client.
+
+Options:
+  --user TEXT
+  --token TEXT
+  --url TEXT
+  --help        Show this message and exit.
+</code></pre></div>
+<h3 id="get-template"><code>get-template</code></h3>
+<div class="highlight"><pre><span></span><code>Usage: s2gos get-template [OPTIONS] TEMPLATE_NAME
+
+  Get a processing request template.
+
+Options:
+  --request TEXT
+  --help          Show this message and exit.
+</code></pre></div>
+<h3 id="list-templates"><code>list-templates</code></h3>
+<div class="highlight"><pre><span></span><code>Usage: s2gos list-templates [OPTIONS]
+
+  List available processing request templates.
+
+Options:
+  --help  Show this message and exit.
+</code></pre></div>
+<h3 id="validate-request"><code>validate-request</code></h3>
+<div class="highlight"><pre><span></span><code>Usage: s2gos validate-request [OPTIONS]
+
+  Validate a processing request.
+
+Options:
+  --name TEXT
+  --help       Show this message and exit.
+</code></pre></div>
+<h3 id="submit-request"><code>submit-request</code></h3>
+<div class="highlight"><pre><span></span><code>Usage: s2gos submit-request [OPTIONS]
+
+  Submit a processing request.
+
+Options:
+  --name TEXT
+  --help       Show this message and exit.
+</code></pre></div>
+<h3 id="cancel-jobs"><code>cancel-jobs</code></h3>
+<div class="highlight"><pre><span></span><code>Usage: s2gos cancel-jobs [OPTIONS] [JOB_IDS]...
+
+  Cancel running processing jobs.
+
+Options:
+  --help  Show this message and exit.
+</code></pre></div>
+<h3 id="poll-jobs"><code>poll-jobs</code></h3>
+<div class="highlight"><pre><span></span><code>Usage: s2gos poll-jobs [OPTIONS] [JOB_IDS]...
+
+  Poll the status of processing jobs.
+
+Options:
+  --help  Show this message and exit.
+</code></pre></div>
+<h3 id="get-results"><code>get-results</code></h3>
+<div class="highlight"><pre><span></span><code>Usage: s2gos get-results [OPTIONS] [JOB_IDS]...
+
+  Get processing results.
+
+Options:
+  --help  Show this message and exit.
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
               </article>
             </div>
           
@@ -399,10 +766,10 @@
     
     
       
-      <script id="__config" type="application/json">{"base": "/", "features": [], "search": "/assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="/assets/javascripts/bundle.13a4f30d.min.js"></script>
+      <script src="../assets/javascripts/bundle.13a4f30d.min.js"></script>
       
     
   </body>

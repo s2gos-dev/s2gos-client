@@ -9,7 +9,7 @@
       
       
       
-        <link rel="prev" href="..">
+        <link rel="prev" href="../cli/">
       
       
       
@@ -258,6 +258,28 @@
   
   <span class="md-ellipsis">
     Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    CLI
     
   </span>
   
@@ -580,6 +602,10 @@ ruff<span class="w"> </span>check
 mkdocs<span class="w"> </span>build
 mkdocs<span class="w"> </span>serve
 mkdocs<span class="w"> </span>gh-deploy
+</code></pre></div>
+<p>After changing the CLI code, always update its documentation <code>docs/cli.md</code> 
+by running</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>docs/scripts/gen-cli-md.py
 </code></pre></div>
 <h2 id="license">License</h2>
 <p>The S2GOS client is open source made available under the terms and conditions of the 
