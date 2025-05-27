@@ -21,7 +21,8 @@ def create(params_schema: dict[str, Any]) -> Panel:
         params_schema: A JSON object schema whose `properties`
             describe the allowed parameters.
     Return:
-        The S2GOS GUI.
+        A S2GOS GUI for the given `params_schema` of type
+        `panel.layout.Panel`.
     """
     form_widgets = params_schema_to_widgets(params_schema)
     form = pn.Column(*form_widgets.values())
