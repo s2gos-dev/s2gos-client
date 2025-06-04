@@ -5,7 +5,7 @@
 import click
 from pathlib import Path
 from click.testing import CliRunner
-from s2gos.cli import main as cli
+from s2gos.client.cli.main import main as cli
 
 OUTPUT_FILE: Path = Path(__file__).parent.parent / "cli.md"
 
