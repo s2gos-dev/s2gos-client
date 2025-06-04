@@ -3,12 +3,12 @@
 #  https://opensource.org/license/apache-2-0.
 
 from abc import abstractmethod, ABC
-from typing import Any, Generic, Literal, Optional, TypeVar
+from typing import Any, Literal, Optional, TypeVar
 
 T = TypeVar("T")
 
 
-class Service(Generic[T], ABC):
+class Service(ABC):
     """Abstraction of the S2GOS web API service."""
 
     _default: Optional["Service"] = None
@@ -40,9 +40,10 @@ class Service(Generic[T], ABC):
         """
 
 
-class DefaultService(Generic[T], Service[T]):
+class DefaultService(Service):
     def call(
         self,
+        *,
         path: str,
         method: Literal["get", "post", "put", "delete"],
         params: dict[str, Any],
@@ -54,4 +55,4 @@ class DefaultService(Generic[T], Service[T]):
         print("  method:", method)
         print("  params:", params)
         print("  return_type:", return_type)
-        return None
+        return return_type()

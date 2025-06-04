@@ -7,10 +7,12 @@
 # DONE: add imports from s2gos.models
 # DONE: clarify callbacks and handle callbacks --> not needed for now
 # DONE: implement real call_api() in s2gos/client/service.py, import it
-# TODO: generate docstrings
+# DONE: use "ruff format" at the end
+# TODO: complete generating docstrings: handle parameter default values
+# TODO: complete generating docstrings: handle requestBody
+# TODO: complete generating docstrings: handle responses
 # TODO: support multiple success codes, e.g., 200, 201, etc
 # TODO: support multiple error codes, e.g., 401, 500, etc
-# TODO: use "ruff format" at the end
 
 import re
 import subprocess
@@ -68,13 +70,20 @@ def generate_function_code(
     for parameter in method.parameters:
         param_name = camel_to_snake(parameter.name)
         param_type = "Any"
+        param_default: str | None = None
         if parameter.schema_:
             param_type = to_py_type(
                 parameter.schema_,
-                method.operationId + "." + parameter.name,
+                f"{method.operationId}.{parameter.name}",
                 models,
             )
-        param_defs.append(f"{param_name}: {param_type}")
+            default_value = parameter.schema_.get("default", ...)
+            if default_value is not ...:
+                param_default = repr(default_value)
+        if param_default is not None:
+            param_defs.append(f"{param_name}: {param_type} = {param_default}")
+        else:
+            param_defs.append(f"{param_name}: {param_type}")
         param_kwargs.append(f"{parameter.name!r}: {param_name}")
     param_defs.append("_service: Optional[Service] = None")
     param_list = ", ".join(param_defs)
