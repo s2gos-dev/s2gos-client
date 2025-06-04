@@ -48,13 +48,14 @@ dependencies = [
   "jupyter",
   "notebook",
   "panel",
+  "pydantic",
   "pyyaml",
   "tornado >=6.1",
   "voila",
 ]
 
 [project.scripts]
-s2gos = "s2gos.cli:main"
+s2gos = "s2gos.client.cli.main:main"
 
 [project.optional-dependencies]
 dev = [
@@ -68,6 +69,8 @@ dev = [
   # Testing
   "pytest",
   "pytest-cov",
+  # UI dev with Panel
+  "watchfiles"
 ]
 doc = [
   "mkdocs",
@@ -80,6 +83,12 @@ doc = [
 [tool.setuptools.dynamic]
 version = {attr = "s2gos.__version__"}
 readme = {file = "README.md", content-type = "text/markdown"}
+
+[tool.setuptools.package-data]
+s2gos = [
+    "py.typed",
+    "common/openapi.yaml"
+]
 
 [tool.setuptools.packages.find]
 exclude = [

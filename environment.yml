@@ -11,8 +11,9 @@ dependencies:
   - jupyter
   - notebook
   - panel
+  - pydantic
   - pyyaml
-  - tornado >=6.1
+  - tornado
   - voila
   # Development Dependencies
   - isort
@@ -24,3 +25,4 @@ dependencies:
   - pytest
   - pytest-cov
   - ruff
+  - watchfiles

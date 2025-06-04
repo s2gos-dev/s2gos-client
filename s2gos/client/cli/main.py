@@ -5,7 +5,7 @@
 import os
 import click
 
-from .defaults import DEFAULT_REQUEST_FILE, DEFAULT_SERVER_URL
+from s2gos.client.defaults import DEFAULT_REQUEST_FILE, DEFAULT_SERVER_URL
 
 
 class AliasedGroup(click.Group):

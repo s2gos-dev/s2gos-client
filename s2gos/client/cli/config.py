@@ -8,7 +8,9 @@ from typing import Optional
 
 import yaml
 
-from .defaults import DEFAULT_CONFIG_PATH
+from s2gos.client.defaults import DEFAULT_CONFIG_PATH
+
+# TODO: use pydantic BaseModel instead of @dataclass
 
 
 @dataclass
