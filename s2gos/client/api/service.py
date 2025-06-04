@@ -5,6 +5,8 @@
 from abc import abstractmethod, ABC
 from typing import Any, Literal, Optional, TypeVar
 
+from pydantic import BaseModel
+
 T = TypeVar("T")
 
 
@@ -33,7 +35,7 @@ class Service(ABC):
         path: str,
         method: Literal["get", "post", "put", "delete"],
         params: dict[str, Any],
-        request: Any,
+        request: BaseModel | None,
         return_type: type[T],
     ) -> T:
         """
@@ -51,7 +53,7 @@ class DefaultService(Service):
         path,
         method: Literal["get", "post", "put", "delete"],
         params: dict[str, Any],
-        request: Any,
+        request: BaseModel | None,
         return_type: type[T],
     ) -> T:
         # TODO: implement DefaultService.call()
@@ -59,5 +61,6 @@ class DefaultService(Service):
         print("  path:", path)
         print("  method:", method)
         print("  params:", params)
+        print("  request:", request)
         print("  return_type:", return_type)
         return return_type()

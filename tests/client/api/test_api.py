@@ -5,6 +5,8 @@
 from typing import Literal, Any
 from unittest import TestCase
 
+from pydantic import BaseModel
+
 import s2gos.client.api.api as s2g_api
 from s2gos.client.api.service import Service
 from s2gos.common.models import LandingPage, ConfClasses, ProcessList, Process
@@ -19,7 +21,7 @@ class TestService(Service):
         path: str,
         method: Literal["get", "post", "put", "delete"],
         params: dict[str, Any],
-        request: Any,
+        request: BaseModel | None,
         return_type: type[object],
     ) -> Any:
         self.call_stack.append(
