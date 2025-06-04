@@ -2,7 +2,7 @@
 #  Permissions are hereby granted under the terms of the Apache 2.0 License:
 #  https://opensource.org/license/apache-2-0.
 
-import s2gos.client.gui
+import s2gos.client.gui as s2g_gui
 
 
 schema = {
@@ -35,5 +35,5 @@ schema = {
     "required": ["dataset", "region", "start_date", "end_date"],
 }
 
-gui = s2gos.gui.create(schema)
+gui = s2g_gui.create(schema)
 gui.servable()
