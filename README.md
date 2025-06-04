@@ -2,25 +2,35 @@
 
 A Python client for the ESA DTE-S2GOS synthetic scene generator service
 
-
-## Experimental UI 
+## Development
 
 Create a new environment using `conda` or `mamba`
 
 ```commandline
-mamba env create 
+mamba env create -f ./environment.yml 
 conda activate s2gos
+pip install -ve . 
 ```
+
+### Python API
+
+```python
+import s2gos.client.api as s2g
+
+s2g.
+```
+
+
+### CLI
+
+```commandline
+s2gos --help
+```
+
+### GUI 
 
 Run via panel server:
 
 ```commandline
-panel serve  --show ./examples/demo.py
-```
-
-
-Run UI as individual website:
-
-```commandline
-voila ./notebooks/demo.ipynb
+panel serve  --show --dev ./examples/demo.py
 ```
