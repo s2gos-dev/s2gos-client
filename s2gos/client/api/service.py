@@ -3,10 +3,12 @@
 #  https://opensource.org/license/apache-2-0.
 
 from abc import abstractmethod, ABC
-from typing import Any, Literal, Optional
+from typing import Any, Generic, Literal, Optional, TypeVar
+
+T = TypeVar("T")
 
 
-class Service(ABC):
+class Service(Generic[T], ABC):
     """Abstraction of the S2GOS web API service."""
 
     _default: Optional["Service"] = None
@@ -29,8 +31,8 @@ class Service(ABC):
         path: str,
         method: Literal["get", "post", "put", "delete"],
         params: dict[str, Any],
-        return_type: type,
-    ) -> Any:
+        return_type: type[T],
+    ) -> T:
         """
         Call the S2GOS API service with the given endpoint
         `path`, `method`, `params`. Then validate the response
@@ -38,14 +40,14 @@ class Service(ABC):
         """
 
 
-class DefaultService(Service):
+class DefaultService(Generic[T], Service[T]):
     def call(
         self,
         path: str,
         method: Literal["get", "post", "put", "delete"],
         params: dict[str, Any],
-        return_type: type,
-    ) -> Any:
+        return_type: type[T],
+    ) -> T:
         # TODO: implement me
         print("Calling service API:")
         print("  path:", path)
