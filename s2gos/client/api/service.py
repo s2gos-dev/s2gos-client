@@ -15,12 +15,14 @@ class Service(ABC):
 
     @classmethod
     def default(cls) -> "Service":
+        """Get the default service."""
         if cls._default is None:
             cls._default = DefaultService()
         return cls._default
 
     @classmethod
     def set_default(cls, service: "Service") -> Optional["Service"]:
+        """Set the default service."""
         old_service = cls._default
         cls._default = service
         return old_service
@@ -31,6 +33,7 @@ class Service(ABC):
         path: str,
         method: Literal["get", "post", "put", "delete"],
         params: dict[str, Any],
+        request: Any,
         return_type: type[T],
     ) -> T:
         """
@@ -41,15 +44,17 @@ class Service(ABC):
 
 
 class DefaultService(Service):
+    """The concrete S2GOS web API service."""
+
     def call(
         self,
-        *,
-        path: str,
+        path,
         method: Literal["get", "post", "put", "delete"],
         params: dict[str, Any],
+        request: Any,
         return_type: type[T],
     ) -> T:
-        # TODO: implement me
+        # TODO: implement DefaultService.call()
         print("Calling service API:")
         print("  path:", path)
         print("  method:", method)

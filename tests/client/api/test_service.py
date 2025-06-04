@@ -30,6 +30,10 @@ class DefaultServiceTest(TestCase):
         # The following test is currently just a smoke test, but that's ok
         with pytest.raises(ValidationError, match="conformsTo"):
             result = service.call(
-                path="/conformance", method="get", params={}, return_type=ConfClasses
+                path="/conformance",
+                method="get",
+                params={},
+                request=None,
+                return_type=ConfClasses,
             )
             self.assertIsInstance(result, ConfClasses)

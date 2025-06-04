@@ -25,7 +25,7 @@ class OAContent(BaseModel):
 
 class OARequestBody(BaseModel):
     description: Annotated[str, Field(default=None)]
-    content: Annotated[dict[str, OAContent], Field(default_factory=lambda: {})]
+    content: dict[str, OAContent]
     required: Annotated[bool, Field(default=False)]
 
 

@@ -8,8 +8,8 @@
 # DONE: clarify callbacks and handle callbacks --> not needed for now
 # DONE: implement real call_api() in s2gos/client/service.py, import it
 # DONE: use "ruff format" at the end
-# TODO: complete generating docstrings: handle parameter default values
-# TODO: complete generating docstrings: handle requestBody
+# DONE: complete generating docstrings: handle parameter default values
+# DONE: complete generating docstrings: handle requestBody
 # TODO: complete generating docstrings: handle responses
 # TODO: support multiple success codes, e.g., 200, 201, etc
 # TODO: support multiple error codes, e.g., 401, 500, etc
@@ -85,9 +85,24 @@ def generate_function_code(
         else:
             param_defs.append(f"{param_name}: {param_type}")
         param_kwargs.append(f"{parameter.name!r}: {param_name}")
+
+    request_type: str | None = None
+    if method.requestBody:
+        request_type = "Any"
+        json_content = method.requestBody.content.get("application/json")
+        if json_content and json_content.schema_:
+            request_type = to_py_type(
+                json_content.schema_, f"{method.operationId}.requestBody", models
+            )
+        if method.requestBody.required:
+            param_defs.append(f"request: {request_type}")
+        else:
+            param_defs.append(f"request: Optional[{request_type}] = None")
+
     param_defs.append("_service: Optional[Service] = None")
     param_list = ", ".join(param_defs)
     param_dict = "{" + ", ".join(param_kwargs) + "}"
+
     return_type = "Any"
     ok_response = method.responses.get("200")
     if ok_response and ok_response.content:
@@ -104,6 +119,7 @@ def generate_function_code(
         f"path={path!r}, "
         f"method={method_name!r}, "
         f"params={param_dict}, "
+        f"request={'request' if request_type else 'None'}, "
         f"return_type={return_type}"
         f")\n"
     )
@@ -125,9 +141,17 @@ def generate_function_doc(method: OAMethod) -> str:
             else:
                 doc_lines.append(f"  {param_name}:")
     # TODO: split long lines that exceed 80 characters
+
     if method.requestBody:
-        # TODO: generate doc for method.requestBody, document extra "payload" param
-        pass
+        json_content = method.requestBody.content.get("application/json")
+        if json_content:
+            if method.requestBody.description:
+                param_desc_lines = method.requestBody.description.split("\n")
+                doc_lines.append(f"  request: {param_desc_lines[0]}")
+                doc_lines.extend([f"    {line}" for line in param_desc_lines[1:]])
+            else:
+                doc_lines.append("  request:")
+
     if method.responses:
         # TODO: generate doc for method.responses, document "Returns:"
         pass
