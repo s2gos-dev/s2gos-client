@@ -15,9 +15,10 @@ pip install -ve .
 ### Python API
 
 ```python
-import s2gos.client.api as s2g_api
+from s2gos.client.api import Client
 
-s2g_api.get_landing_page()
+client = Client()
+client.get_landing_page()
 ```
 
 

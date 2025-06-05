@@ -2,11 +2,11 @@
 #  Permissions are hereby granted under the terms of the Apache 2.0 License:
 #  https://opensource.org/license/apache-2-0.
 
-import s2gos.common.models as client_models
-from . import api as client_api
+import s2gos.common.models as models
+from .client import Client
 import inspect
 
-__all__ = []
+__all__ = ["Client"]
 
 
 def _add_members(module, predicate):
@@ -16,5 +16,4 @@ def _add_members(module, predicate):
             __all__.append(name)
 
 
-_add_members(client_api, inspect.isfunction)
-_add_members(client_models, inspect.isclass)
+_add_members(models, inspect.isclass)

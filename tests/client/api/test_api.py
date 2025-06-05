@@ -7,7 +7,7 @@ from unittest import TestCase
 
 from pydantic import BaseModel
 
-import s2gos.client.api.api as s2g_api
+from s2gos.client.api import Client
 from s2gos.client.api.service import Service
 from s2gos.common.models import LandingPage, ConfClasses, ProcessList, Process
 
@@ -38,15 +38,8 @@ class TestService(Service):
 
 class ClientApiTest(TestCase):
     def setUp(self):
-        self._old_service = Service.set_default(TestService())
-
-    def tearDown(self):
-        Service.set_default(self._old_service)
-
-    @property
-    def service(self) -> TestService:
-        # noinspection PyTypeChecker
-        return Service.default()
+        self.service = TestService()
+        self.client = Client(service=self.service)
 
     def assert_service_call_ok(self, expected_kwargs: dict[str, Any]):
         self.assertEqual(1, len(self.service.call_stack))
@@ -56,7 +49,7 @@ class ClientApiTest(TestCase):
         )
 
     def test_get_landing_page(self):
-        result = s2g_api.get_landing_page()
+        result = self.client.get_landing_page()
         self.assert_service_call_ok(
             {
                 "path": "/",
@@ -69,7 +62,7 @@ class ClientApiTest(TestCase):
         self.assertIsInstance(result, LandingPage)
 
     def test_get_conformance_classes(self):
-        result = s2g_api.get_conformance_classes()
+        result = self.client.get_conformance_classes()
         self.assert_service_call_ok(
             {
                 "path": "/conformance",
@@ -82,7 +75,7 @@ class ClientApiTest(TestCase):
         self.assertIsInstance(result, ConfClasses)
 
     def test_get_processes(self):
-        result = s2g_api.get_processes()
+        result = self.client.get_processes()
         self.assert_service_call_ok(
             {
                 "path": "/processes",
@@ -95,7 +88,7 @@ class ClientApiTest(TestCase):
         self.assertIsInstance(result, ProcessList)
 
     def test_get_process_description(self):
-        result = s2g_api.get_process_description(process_id="gobabeb_1")
+        result = self.client.get_process_description(process_id="gobabeb_1")
         self.assert_service_call_ok(
             {
                 "path": "/processes/{processID}",
