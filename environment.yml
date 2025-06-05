@@ -5,6 +5,7 @@ dependencies:
   - python >=3.10
   # Dependencies
   - click
+  - fastapi
   - ipyleaflet
   - ipywidgets
   - ipywidgets_bokeh

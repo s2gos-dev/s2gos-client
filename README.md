@@ -12,7 +12,13 @@ conda activate s2gos
 pip install -ve . 
 ```
 
-### Python API
+### Server
+
+```commandline
+$ fastapi dev s2gos/server/main.py
+```
+
+### Client Python API
 
 ```python
 from s2gos.client.api import Client
@@ -21,17 +27,16 @@ client = Client()
 client.get_landing_page()
 ```
 
-
-### CLI
+### Client CLI
 
 ```commandline
-s2gos --help
+$ s2gos --help
 ```
 
-### GUI 
+### Client GUI 
 
 Run via panel server:
 
 ```commandline
-panel serve  --show --dev ./examples/demo.py
+$ panel serve  --show --dev ./examples/demo.py
 ```
