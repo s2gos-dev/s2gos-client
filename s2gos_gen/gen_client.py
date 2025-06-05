@@ -2,19 +2,6 @@
 #  Permissions are hereby granted under the terms of the Apache 2.0 License:
 #  https://opensource.org/license/apache-2-0.
 
-# DONE: identify and collect $ref classes in to_py_type()
-# DONE: output to s2gos/client/api/client.py
-# DONE: add imports from s2gos.models
-# DONE: clarify callbacks and handle callbacks --> not needed for now
-# DONE: implement real call_api() in s2gos/client/service.py, import it
-# DONE: use "ruff format" at the end
-# DONE: complete generating docstrings: handle parameter default values
-# DONE: complete generating docstrings: handle requestBody
-# DONE: generate a client class instead of function set
-# TODO: complete generating docstrings: handle responses
-#   support multiple success codes, e.g., 200, 201, etc
-#   support multiple error codes, e.g., 401, 500, etc
-
 import re
 import subprocess
 from pathlib import Path
@@ -23,7 +10,7 @@ from typing import Any, Literal
 import datetime
 
 from s2gos_gen.common import S2GOS_PATH, OPEN_API_PATH
-from s2gos_gen.openapi import load_openapi_schema, OASchema, OAContent, OAMethod
+from s2gos_gen.openapi import load_openapi_schema, OASchema, OAMethod
 
 
 CLIENT_PATH = S2GOS_PATH / "client" / "api" / "client.py"
@@ -42,21 +29,35 @@ def main():
         stream.write(f"#   filename:  {CLIENT_PATH.name}:\n")
         stream.write(f"#   timestamp: {datetime.datetime.now().isoformat()}\n")
         stream.write("\n")
-        stream.write("from typing import Any, Optional\n")
+        stream.write("from typing import Optional\n")
         stream.write("\n")
         stream.write(f"from s2gos.common.models import {model_list}\n")
-        stream.write("from .service import Service")
+        stream.write("from .service import DefaultService, Service")
         stream.write("\n")
         stream.write("class Client:\n")
-        stream.write(f'{C_TAB}"""The S2GOS Client API."""\n')
+        stream.write(f'{C_TAB}"""\n')
+        stream.write(f"{C_TAB}The S2GOS Client API.\n")
         stream.write("\n")
-        stream.write(f"{C_TAB}def __init__(self, service: Optional[Service] = None):\n")
-        stream.write(f"{C_TAB}{C_TAB}self._service = service or Service.default()\n")
+        stream.write(f"{C_TAB}Args:\n")
+        stream.write(f"{C_TAB}{D_TAB}service: Optional API service instance.\n")
+        stream.write(
+            f"{C_TAB}{D_TAB}kwargs: Configuration passed to `DefaultService` constructor.\n"
+        )
+        stream.write(f"{C_TAB}{D_TAB}{D_TAB}if `service` is not provided.\n")
+        stream.write(f'{C_TAB}"""\n')
+        stream.write("\n")
+        stream.write(
+            f"{C_TAB}def __init__(self, *, service: Optional[Service] = None, **kwargs):\n"
+        )
+        stream.write(
+            f"{C_TAB}{C_TAB}self._service = DefaultService(**kwargs) if service is None else service\n"
+        )
         stream.write("\n")
         stream.write(code)
 
     print(f"Generated {CLIENT_PATH}")
     subprocess.run(["ruff", "format", str(CLIENT_PATH)])
+    subprocess.run(["ruff", "check", str(CLIENT_PATH)])
 
 
 def generate_api_code(schema: OASchema, models: set[str]) -> str:
@@ -113,23 +114,30 @@ def generate_function_code(
     param_list = ", ".join([*param_args, *param_kwargs])
     param_dict = "{" + ", ".join(param_mappings) + "}"
 
-    return_type = "Any"
-    ok_response = method.responses.get("200")
-    if ok_response and ok_response.content:
-        json_content: OAContent | None = ok_response.content.get("application/json")
-        if json_content and json_content.schema_:
-            return_type = to_py_type(json_content.schema_, path, models)
+    return_types, error_types = parse_responses(method, models)
+
+    if not return_types:
+        return_types = {"200": "None"}
 
     function_doc = generate_function_doc(method)
+    return_type_union = " | ".join(set(v[0] for v in return_types.values()))
+    return_type_dict = (
+        "{" + ", ".join([f"{k!r}: {v[0]}" for k, v in return_types.items()]) + "}"
+    )
+    error_type_dict = (
+        "{" + ", ".join([f"{k!r}: {v[0]}" for k, v in error_types.items()]) + "}"
+    )
     return (
-        f"{C_TAB}def {camel_to_snake(method.operationId)}({param_list}) -> {return_type}:\n"
+        f"{C_TAB}def {camel_to_snake(method.operationId)}({param_list})"
+        f" -> {return_type_union}:\n"
         f"{function_doc}"
         f"{C_TAB}{C_TAB}return self._service.call("
         f"path={path!r}, "
         f"method={method_name!r}, "
         f"params={param_dict}, "
         f"request={'request' if request_type else 'None'}, "
-        f"return_type={return_type}"
+        f"return_types={return_type_dict}, "
+        f"error_types={error_type_dict}"
         f")\n"
     )
 
@@ -146,9 +154,12 @@ def generate_function_doc(method: OAMethod) -> str:
             if parameter.description:
                 param_desc_lines = parameter.description.split("\n")
                 doc_lines.append(f"{D_TAB}{param_name}: {param_desc_lines[0]}")
-                doc_lines.extend([f"{2 * D_TAB}{line}" for line in param_desc_lines[1:]])
+                doc_lines.extend(
+                    [f"{2 * D_TAB}{line}" for line in param_desc_lines[1:]]
+                )
             else:
                 doc_lines.append(f"{D_TAB}{param_name}:")
+
     # TODO: split long lines that exceed 80 characters
 
     if method.requestBody:
@@ -157,13 +168,33 @@ def generate_function_doc(method: OAMethod) -> str:
             if method.requestBody.description:
                 param_desc_lines = method.requestBody.description.split("\n")
                 doc_lines.append(f"{D_TAB}request: {param_desc_lines[0]}")
-                doc_lines.extend([f"{2 * D_TAB}{line}" for line in param_desc_lines[1:]])
+                doc_lines.extend(
+                    [f"{D_TAB}{D_TAB}{line}" for line in param_desc_lines[1:]]
+                )
             else:
                 doc_lines.append("  request:")
 
-    if method.responses:
-        # TODO: generate doc for method.responses, document "Returns:"
-        pass
+    return_types, error_types = parse_responses(method, set())
+
+    def append_responses(
+        resp_title: str, resp_types: dict[str, tuple[str, list[str]]], lines: list[str]
+    ):
+        lines.append("")
+        lines.append(f"{resp_title}:")
+        for resp_code, (resp_type, desc_lines) in resp_types.items():
+            if desc_lines:
+                lines.append(f"{D_TAB}{resp_type}: {desc_lines[0]}")
+                for desc_line in desc_lines[1:]:
+                    lines.append(f"{D_TAB}{D_TAB}{desc_line}")
+            else:
+                lines.append(f"{D_TAB}{resp_type}:")
+
+    if return_types:
+        append_responses("Returns", return_types, doc_lines)
+
+    if error_types:
+        append_responses("Raises", error_types, doc_lines)
+
     doc_lines = [
         '"""',
         *doc_lines,
@@ -171,6 +202,30 @@ def generate_function_doc(method: OAMethod) -> str:
     ]
     doc_lines = [f"{2 * C_TAB}{line}" for line in doc_lines]
     return "\n".join(doc_lines) + "\n"
+
+
+def parse_responses(
+    method: OAMethod,
+    models: set[str],
+) -> tuple[dict[str, tuple[str, list[str]]], dict[str, tuple[str, list[str]]]]:
+    return_types: dict[str, tuple[str, list[str]]] = {}
+    error_types: dict[str, tuple[str, list[str]]] = {}
+    if method.responses:
+        for key, response in method.responses.items():
+            status_code = int(key)
+            description = response.description
+            desc_lines = description.split("\n") if description else []
+            if response.content:
+                json_content = response.content.get("application/json")
+                if json_content and json_content.schema_:
+                    response_type = to_py_type(
+                        json_content.schema_, "responses", models
+                    )
+                    if 200 <= status_code < 300:
+                        return_types[key] = response_type, desc_lines
+                    else:
+                        error_types[key] = response_type, desc_lines
+    return return_types, error_types
 
 
 _REF_PREFIX = "#/components/schemas/"

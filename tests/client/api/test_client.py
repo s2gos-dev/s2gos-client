@@ -9,7 +9,7 @@ from pydantic import BaseModel
 
 from s2gos.client.api import Client
 from s2gos.client.api.service import Service
-from s2gos.common.models import LandingPage, ConfClasses, ProcessList, Process
+from s2gos.common.models import Exception, LandingPage, ConfClasses, ProcessList, Process
 
 
 class TestService(Service):
@@ -22,7 +22,8 @@ class TestService(Service):
         method: Literal["get", "post", "put", "delete"],
         params: dict[str, Any],
         request: BaseModel | None,
-        return_type: type[object],
+        return_types: dict[str, type | None],
+        error_types: dict[str, type | None],
     ) -> Any:
         self.call_stack.append(
             dict(
@@ -30,10 +31,13 @@ class TestService(Service):
                 method=method,
                 params=params,
                 request=request,
-                return_type=return_type,
+                return_types=return_types,
+                error_types=error_types,
             )
         )
-        return object.__new__(return_type)
+        return_type = return_types["200"]
+        # noinspection PyTypeChecker
+        return object.__new__(return_type) if return_type is not None else None
 
 
 class ClientApiTest(TestCase):
@@ -56,7 +60,8 @@ class ClientApiTest(TestCase):
                 "method": "get",
                 "params": {},
                 "request": None,
-                "return_type": LandingPage,
+                "return_types": {"200": LandingPage},
+                "error_types": {"500": Exception},
             }
         )
         self.assertIsInstance(result, LandingPage)
@@ -69,7 +74,8 @@ class ClientApiTest(TestCase):
                 "method": "get",
                 "params": {},
                 "request": None,
-                "return_type": ConfClasses,
+                "return_types": {"200": ConfClasses},
+                "error_types": {"500": Exception},
             }
         )
         self.assertIsInstance(result, ConfClasses)
@@ -82,7 +88,8 @@ class ClientApiTest(TestCase):
                 "method": "get",
                 "params": {},
                 "request": None,
-                "return_type": ProcessList,
+                "return_types": {"200": ProcessList},
+                "error_types": {},
             }
         )
         self.assertIsInstance(result, ProcessList)
@@ -95,7 +102,8 @@ class ClientApiTest(TestCase):
                 "method": "get",
                 "params": {"processID": "gobabeb_1"},
                 "request": None,
-                "return_type": Process,
+                "return_types": {"200": Process},
+                "error_types": {"404": Exception},
             }
         )
         self.assertIsInstance(result, Process)

@@ -7,21 +7,8 @@ from unittest import TestCase
 import pytest
 from pydantic import ValidationError
 
-from s2gos.client.api.service import DefaultService, Service
-from s2gos.common.models import ConfClasses
-
-
-class ServiceTest(TestCase):
-    def test_default(self):
-        self.assertIsInstance(Service.default(), DefaultService)
-        self.assertIs(Service.default(), Service.default())
-
-    def test_set_default(self):
-        current = DefaultService()
-        last1 = Service.default()
-        last2 = Service.set_default(current)
-        self.assertIs(last1, last2)
-        self.assertIs(current, Service.default())
+from s2gos.client.api.service import DefaultService
+from s2gos.common.models import ConfClasses, Exception
 
 
 class DefaultServiceTest(TestCase):
@@ -34,6 +21,7 @@ class DefaultServiceTest(TestCase):
                 method="get",
                 params={},
                 request=None,
-                return_type=ConfClasses,
+                return_types={"200": ConfClasses},
+               error_types={"401": Exception},
             )
             self.assertIsInstance(result, ConfClasses)

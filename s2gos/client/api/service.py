@@ -3,31 +3,14 @@
 #  https://opensource.org/license/apache-2-0.
 
 from abc import abstractmethod, ABC
-from typing import Any, Literal, Optional, TypeVar
+from logging import getLogger
+from typing import Any, Literal
 
 from pydantic import BaseModel
-
-T = TypeVar("T")
 
 
 class Service(ABC):
     """Abstraction of the S2GOS web API service."""
-
-    _default: Optional["Service"] = None
-
-    @classmethod
-    def default(cls) -> "Service":
-        """Get the default service."""
-        if cls._default is None:
-            cls._default = DefaultService()
-        return cls._default
-
-    @classmethod
-    def set_default(cls, service: "Service") -> Optional["Service"]:
-        """Set the default service."""
-        old_service = cls._default
-        cls._default = service
-        return old_service
 
     @abstractmethod
     def call(
@@ -36,17 +19,23 @@ class Service(ABC):
         method: Literal["get", "post", "put", "delete"],
         params: dict[str, Any],
         request: BaseModel | None,
-        return_type: type[T],
-    ) -> T:
+        return_types: dict[str, type | None],
+        error_types: dict[str, type | None],
+    ) -> Any:
         """
         Call the S2GOS API service with the given endpoint
         `path`, `method`, `params`. Then validate the response
-        and return an instance of the type given by `return_type`.
+        and return an instance of one of the types given by
+        `return_types`.
         """
 
 
 class DefaultService(Service):
     """The concrete S2GOS web API service."""
+
+    def __init__(self, debug: bool = False, **kwargs):
+        # TODO: expand, document and use kwargs
+        self.debug = debug
 
     def call(
         self,
@@ -54,13 +43,28 @@ class DefaultService(Service):
         method: Literal["get", "post", "put", "delete"],
         params: dict[str, Any],
         request: BaseModel | None,
-        return_type: type[T],
-    ) -> T:
+        return_types: dict[str, type | None],
+        error_types: dict[str, type | None],
+    ) -> Any:
         # TODO: implement DefaultService.call()
-        print("Calling service API:")
-        print("  path:", path)
-        print("  method:", method)
-        print("  params:", params)
-        print("  request:", request)
-        print("  return_type:", return_type)
-        return return_type()
+
+        if self.debug:
+            logger = getLogger("s2gos")
+            logger.debug(
+                "Calling service API:\n"
+                "  path: %s\n"
+                "  method: %s\n"
+                "  params: %s\n"
+                "  request: %s\n"
+                "  return_types: %s\n"
+                "  error_types: %s",
+                path,
+                method,
+                params,
+                request,
+                return_types,
+                error_types,
+            )
+
+        return_type = return_types["200"]
+        return return_type() if return_type is not None else None
