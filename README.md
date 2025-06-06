@@ -14,7 +14,7 @@ pip install -ve .
 
 ### Code generation
 
-Generate models in `s2gos/common/models.py` 
+Generate [pydantic](https://docs.pydantic.dev/) models in `s2gos/common/models.py` 
 (uses [datamodel-code-generator](https://koxudaxi.github.io/datamodel-code-generator/)):
 
 ```commandline
@@ -34,21 +34,7 @@ service interface in `s2gos/server/service.py`:
 python -m generators.gen_server
 ```
 
-
-With datamodel-codegen (`mamba install datamodel-code-generator`)
-
-```commandline
-datamodel-codegen --input ".\s2gos\server\openapi.yaml" --input-file-type "openapi" --output "models.py" --output-model-type "pydantic_v2.BaseModel" --formatters "ruff-format" --use-union-operator --target-python-version "3.13"
-```
-
-With openapi-generator 
-
-```commandline
-openapi-generator-cli generate -i s2gos/server/openapi.yaml -g python-fastapi -o ./generated/server 
-openapi-generator-cli generate -i s2gos/server/openapi.yaml -g python -o ./generated/client 
-```
-
-### Server
+### Run server
 
 ```commandline
 s2gos-server dev
@@ -60,7 +46,7 @@ or using FastAPI CLI
 $ fastapi dev s2gos/server/main.py
 ```
 
-### Client Python API
+### Run client Python API
 
 ```python
 from s2gos.client.api import Client
@@ -69,13 +55,13 @@ client = Client()
 client.get_landing_page()
 ```
 
-### Client CLI
+### Run client CLI
 
 ```commandline
 $ s2gos --help
 ```
 
-### Client GUI 
+### Run client GUI 
 
 Run via panel server:
 
