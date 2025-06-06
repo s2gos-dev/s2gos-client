@@ -8,7 +8,7 @@ from typing import Literal
 
 import datetime
 
-from s2gos_gen.common import (
+from generators.common import (
     C_TAB,
     D_TAB,
     OPEN_API_PATH,
@@ -18,7 +18,7 @@ from s2gos_gen.common import (
     parse_responses,
     write_file,
 )
-from s2gos_gen.openapi import load_openapi_schema, OASchema, OAMethod
+from generators.openapi import load_openapi_schema, OASchema, OAMethod
 
 GENERATOR_NAME = str(Path(__file__).name)
 

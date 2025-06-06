@@ -76,8 +76,10 @@ dev = [
   # Testing
   "pytest",
   "pytest-cov",
+  # Code generation
+  "datamodel-code-generator",
   # UI dev with Panel
-  "watchfiles"
+  "watchfiles",
 ]
 doc = [
   "mkdocs",
