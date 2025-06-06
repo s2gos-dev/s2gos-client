@@ -16,6 +16,7 @@ def main():
     dcg.generate(
         input_=OPEN_API_PATH,
         input_file_type=dcg.InputFileType.OpenAPI,
+        use_double_quotes=True,
         output_model_type=dcg.DataModelType.PydanticV2BaseModel,
         output=MODELS_PATH,
     )
