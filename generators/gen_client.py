@@ -79,7 +79,8 @@ def generate_function_code(
 ) -> str:
     param_args: list[str] = ["self"]
     param_kwargs: list[str] = []
-    param_mappings: list[str] = []
+    path_param_mappings: list[str] = []
+    query_param_mappings: list[str] = []
     for parameter in method.parameters:
         param_name = camel_to_snake(parameter.name)
         param_type = "Any"
@@ -97,7 +98,15 @@ def generate_function_code(
             param_args.append(f"{param_name}: {param_type}")
         else:
             param_kwargs.append(f"{param_name}: {param_type} = {param_default}")
-        param_mappings.append(f"{parameter.name!r}: {param_name}")
+        if parameter.in_ == "path":
+            path_param_mappings.append(f"{parameter.name!r}: {param_name}")
+        elif parameter.in_ == "query":
+            query_param_mappings.append(f"{parameter.name!r}: {param_name}")
+        else:
+            print(
+                f"⚠️ Error: parameter {parameter.name!r}"
+                f" in {parameter.in_!r} not supported"
+            )
 
     request_type: str | None = None
     if method.requestBody:
@@ -113,7 +122,8 @@ def generate_function_code(
             param_kwargs.append(f"request: Optional[{request_type}] = None")
 
     param_list = ", ".join([*param_args, *param_kwargs])
-    param_dict = "{" + ", ".join(param_mappings) + "}"
+    path_param_dict = "{" + ", ".join(path_param_mappings) + "}"
+    query_param_dict = "{" + ", ".join(query_param_mappings) + "}"
 
     return_types, error_types = parse_responses(method, models)
 
@@ -135,7 +145,8 @@ def generate_function_code(
         f"{C_TAB}{C_TAB}return self._service.call("
         f"path={path!r}, "
         f"method={method_name!r}, "
-        f"params={param_dict}, "
+        f"path_params={path_param_dict}, "
+        f"query_params={query_param_dict}, "
         f"request={'request' if request_type else 'None'}, "
         f"return_types={return_type_dict}, "
         f"error_types={error_type_dict}"

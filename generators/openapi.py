@@ -12,8 +12,10 @@ from pydantic import BaseModel, Field
 
 class OAParameter(BaseModel):
     name: str
+    in_: Annotated[
+        Literal["path", "query", "header", "cookie"], Field(default=None, alias="in")
+    ]
     description: Annotated[str, Field(default=None)]
-    in_: Literal["path", "query"] = "query"
     required: bool = False
     schema_: Annotated[dict[str, Any], Field(default=None, alias="schema")]
 

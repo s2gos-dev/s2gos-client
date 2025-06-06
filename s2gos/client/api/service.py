@@ -7,6 +7,7 @@ from logging import getLogger
 from typing import Any, Literal
 
 from pydantic import BaseModel
+import requests
 
 
 class Service(ABC):
@@ -17,7 +18,8 @@ class Service(ABC):
         self,
         path: str,
         method: Literal["get", "post", "put", "delete"],
-        params: dict[str, Any],
+        path_params: dict[str, Any],
+        query_params: dict[str, Any],
         request: BaseModel | None,
         return_types: dict[str, type | None],
         error_types: dict[str, type | None],
@@ -33,38 +35,47 @@ class Service(ABC):
 class DefaultService(Service):
     """The concrete S2GOS web API service."""
 
-    def __init__(self, debug: bool = False, **kwargs):
+    def __init__(
+        self, server_url: str = "http://localhost:8080", debug: bool = False, **kwargs
+    ):
         # TODO: expand, document and use kwargs
+        self.server_url = server_url.rstrip("/")
         self.debug = debug
 
     def call(
         self,
         path,
         method: Literal["get", "post", "put", "delete"],
-        params: dict[str, Any],
+        path_params: dict[str, Any],
+        query_params: dict[str, Any],
         request: BaseModel | None,
         return_types: dict[str, type | None],
         error_types: dict[str, type | None],
     ) -> Any:
-        # TODO: implement DefaultService.call()
-
         if self.debug:
             logger = getLogger("s2gos")
             logger.debug(
                 "Calling service API:\n"
                 "  path: %s\n"
                 "  method: %s\n"
-                "  params: %s\n"
+                "  path_params: %s\n"
+                "  query_params: %s\n"
                 "  request: %s\n"
                 "  return_types: %s\n"
                 "  error_types: %s",
                 path,
                 method,
-                params,
+                path_params,
+                query_params,
                 request,
                 return_types,
                 error_types,
             )
+
+        import uri_template
+
+        url = f"{self.server_url}{uri_template.expand(path, **path_params)}"
+        ok = requests.request(method, url, params=query_params)
 
         return_type = return_types["200"]
         return return_type() if return_type is not None else None

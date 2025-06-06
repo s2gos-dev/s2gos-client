@@ -19,9 +19,10 @@ class DefaultServiceTest(TestCase):
             result = service.call(
                 path="/conformance",
                 method="get",
-                params={},
+                path_params={},
+                query_params={},
                 request=None,
                 return_types={"200": ConfClasses},
-               error_types={"401": Exception},
+                error_types={"401": Exception},
             )
             self.assertIsInstance(result, ConfClasses)

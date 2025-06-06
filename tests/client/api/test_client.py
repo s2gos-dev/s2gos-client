@@ -9,7 +9,13 @@ from pydantic import BaseModel
 
 from s2gos.client.api import Client
 from s2gos.client.api.service import Service
-from s2gos.common.models import Exception, LandingPage, ConfClasses, ProcessList, Process
+from s2gos.common.models import (
+    Exception,
+    LandingPage,
+    ConfClasses,
+    ProcessList,
+    Process,
+)
 
 
 class TestService(Service):
@@ -20,7 +26,8 @@ class TestService(Service):
         self,
         path: str,
         method: Literal["get", "post", "put", "delete"],
-        params: dict[str, Any],
+        path_params: dict[str, Any],
+        query_params: dict[str, Any],
         request: BaseModel | None,
         return_types: dict[str, type | None],
         error_types: dict[str, type | None],
@@ -29,7 +36,8 @@ class TestService(Service):
             dict(
                 path=path,
                 method=method,
-                params=params,
+                path_params=path_params,
+                query_params=query_params,
                 request=request,
                 return_types=return_types,
                 error_types=error_types,
@@ -58,7 +66,8 @@ class ClientApiTest(TestCase):
             {
                 "path": "/",
                 "method": "get",
-                "params": {},
+                "path_params": {},
+                "query_params": {},
                 "request": None,
                 "return_types": {"200": LandingPage},
                 "error_types": {"500": Exception},
@@ -72,7 +81,8 @@ class ClientApiTest(TestCase):
             {
                 "path": "/conformance",
                 "method": "get",
-                "params": {},
+                "path_params": {},
+                "query_params": {},
                 "request": None,
                 "return_types": {"200": ConfClasses},
                 "error_types": {"500": Exception},
@@ -86,7 +96,8 @@ class ClientApiTest(TestCase):
             {
                 "path": "/processes",
                 "method": "get",
-                "params": {},
+                "path_params": {},
+                "query_params": {},
                 "request": None,
                 "return_types": {"200": ProcessList},
                 "error_types": {},
@@ -100,7 +111,8 @@ class ClientApiTest(TestCase):
             {
                 "path": "/processes/{processID}",
                 "method": "get",
-                "params": {"processID": "gobabeb_1"},
+                "path_params": {"processID": "gobabeb_1"},
+                "query_params": {},
                 "request": None,
                 "return_types": {"200": Process},
                 "error_types": {"404": Exception},
