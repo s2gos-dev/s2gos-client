@@ -15,7 +15,8 @@ dependencies:
   - pydantic
   - pyyaml
   - tornado
-  - voila
+  - typer
+  - uvicorn
   # Development Dependencies
   - isort
   - mkdocs
