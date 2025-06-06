@@ -39,7 +39,7 @@ def write_file(generator_name: str, file_path: Path, code_lines: list[str]):
         for line in code_lines:
             stream.write(line)
 
-    print(f"Generated {file_path}")
+    print(f"✔ Generated {file_path}")
     subprocess.run(["ruff", "format", str(file_path)])
     subprocess.run(["ruff", "check", str(file_path)])
 

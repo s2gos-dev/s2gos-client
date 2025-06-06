@@ -42,7 +42,7 @@ def generate_docs(app: typer.Typer):
     with OUTPUT_FILE.open("wt", encoding="utf-8") as f:
         f.write("\n".join(output_lines))
 
-    print(f"📘 Documentation written to: {OUTPUT_FILE}")
+    print(f"✔ Documentation written to: {OUTPUT_FILE}")
 
 
 if __name__ == "__main__":
