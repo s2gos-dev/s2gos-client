@@ -34,6 +34,14 @@ service interface in `s2gos/server/service.py`:
 python -m generators.gen_server
 ```
 
+### Documentation generation
+
+Generate client CLI reference documentation in `docs/cli.md`:
+
+```commandline
+python -m generators.gen_client_cli_md
+```
+
 ### Run server
 
 ```commandline

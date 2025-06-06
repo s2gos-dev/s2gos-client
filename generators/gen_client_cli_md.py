@@ -2,15 +2,21 @@
 #  Permissions are hereby granted under the terms of the Apache 2.0 License:
 #  https://opensource.org/license/apache-2-0.
 
-import click
+from typing import Final
+
+import typer.core
 from pathlib import Path
 from click.testing import CliRunner
-from s2gos.client.cli.main import main as cli
-
-OUTPUT_FILE: Path = Path(__file__).parent.parent / "cli.md"
+from s2gos.client.cli.cli import cli
 
 
-def generate_docs(cli_group: click.Group):
+DOCS_PATH: Final = (Path(__file__).parent / ".." / "docs").resolve()
+OUTPUT_FILE: Final = DOCS_PATH / "cli.md"
+
+
+def generate_docs(app: typer.Typer):
+    cli_group = typer.main.get_group(app)
+
     runner = CliRunner()
     output_lines = []
 

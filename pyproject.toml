@@ -47,7 +47,7 @@ dependencies = [
 ]
 
 [project.scripts]
-s2gos = "s2gos.client.cli.main:main"
+s2gos = "s2gos.client.cli.cli:cli"
 s2gos-server = "s2gos.server.cli:cli"
 
 [project.optional-dependencies]

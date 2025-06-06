@@ -79,7 +79,7 @@ After changing the CLI code, always update its documentation `docs/cli.md`
 by running
 
 ```bash
-python docs/scripts/gen-cli-md.py
+python docs/scripts/gen_client_cli_md.py
 ```
 
 ## License

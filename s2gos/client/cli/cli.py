@@ -3,12 +3,15 @@
 #  https://opensource.org/license/apache-2-0.
 
 import os
+from typing import Optional
+
 import click
+import typer.core
 
 from s2gos.client.defaults import DEFAULT_REQUEST_FILE, DEFAULT_SERVER_URL
 
 
-class AliasedGroup(click.Group):
+class AliasedGroup(typer.core.TyperGroup):
     @staticmethod
     def to_alias(name: str):
         return "".join(map(lambda n: n[0], name.split("-")))
@@ -43,23 +46,25 @@ class AliasedGroup(click.Group):
         return list(self.commands)
 
 
-@click.group(name="s2gos", cls=AliasedGroup)
-def main():
-    """Client tool for the ESA synthetic scene generator service DTE-S2GOS.
+HELP = """
+Client tool for the ESA synthetic scene generator service DTE-S2GOS.
 
-    The tool provides commands for managing processing request templates,
-    processing requests, processing jobs, and gets processing results.
+The tool provides commands for managing processing request templates,
+processing requests, processing jobs, and gets processing results.
 
-    You can use shorter command name aliases, e.g., use command name "vr"
-    instead of "validate-request", or "lt" instead of "list-templates".
-    """
+You can use shorter command name aliases, e.g., use command name "vr"
+instead of "validate-request", or "lt" instead of "list-templates".
+"""
+
+cli = typer.Typer(cls=AliasedGroup, help=HELP)
 
 
-@main.command()
-@click.option("--user", "user_name")
-@click.option("--token", "access_token")
-@click.option("--url", "server_url")
-def configure(user_name: str, access_token: str, server_url: str):
+@cli.command()
+def configure(
+    user_name: Optional[str] = typer.Option(None, "--user"),
+    access_token: Optional[str] = typer.Option(None, "--token"),
+    server_url: Optional[str] = typer.Option(None, "--url"),
+):
     """Configure the S2GOS client."""
     from .config import Config
 
@@ -93,38 +98,36 @@ def configure(user_name: str, access_token: str, server_url: str):
     click.echo(f"Configuration written to {config_path}")
 
 
-@main.command()
-@click.option("--request", "request_file", default=DEFAULT_REQUEST_FILE)
-@click.argument("template_name")
-def get_template(request_file: str, template_name: str):
+@cli.command()
+def get_template(
+    template_name: str,
+    request_file: str = typer.Option(DEFAULT_REQUEST_FILE, "--request"),
+):
     """Get a processing request template."""
     click.echo(f"Fetching template {template_name} and writing to {request_file}")
 
 
-@main.command()
+@cli.command()
 def list_templates():
     """List available processing request templates."""
     click.echo("Listing available processing request templates")
 
 
-@main.command()
-@click.option("--name", default=DEFAULT_REQUEST_FILE)
-def validate_request(name: str):
+@cli.command()
+def validate_request(name: str = typer.Option(DEFAULT_REQUEST_FILE)):
     """Validate a processing request."""
     click.echo(f"Validating {name}")
 
 
-@main.command()
-@click.option("--name", default=DEFAULT_REQUEST_FILE)
-def submit_request(name: str):
+@cli.command()
+def submit_request(name: str = typer.Option(DEFAULT_REQUEST_FILE)):
     """Submit a processing request."""
     config = _get_config()
     click.echo(f"Submitting request {name} for {config.user_name}")
 
 
-@main.command()
-@click.argument("job_ids", nargs=-1)
-def cancel_jobs(job_ids: tuple[str, ...]):
+@cli.command()
+def cancel_jobs(job_ids: list[str]):
     """Cancel running processing jobs."""
     config = _get_config()
     click.echo(
@@ -134,9 +137,8 @@ def cancel_jobs(job_ids: tuple[str, ...]):
     )
 
 
-@main.command()
-@click.argument("job_ids", nargs=-1)
-def poll_jobs(job_ids: tuple[str, ...]):
+@cli.command()
+def poll_jobs(job_ids: list[str]):
     """Poll the status of processing jobs."""
     config = _get_config()
     click.echo(
@@ -146,9 +148,8 @@ def poll_jobs(job_ids: tuple[str, ...]):
     )
 
 
-@main.command()
-@click.argument("job_ids", nargs=-1)
-def get_results(job_ids: tuple[str]):
+@cli.command()
+def get_results(job_ids: list[str]):
     """Get processing results."""
     config = _get_config()
     click.echo(f"Getting result of job {job_ids!r} for {config.user_name}")
