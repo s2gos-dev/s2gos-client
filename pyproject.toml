@@ -42,23 +42,29 @@ classifiers = [
 requires-python = ">=3.10"
 dependencies = [
   "click",
-  "fastapi",
+  "pydantic",
+  "pyyaml",
+]
+
+[project.scripts]
+s2gos = "s2gos.client.cli.main:main"
+s2gos-server = "s2gos.server.cli:cli"
+
+[project.optional-dependencies]
+gui = [
   "ipyleaflet",
   "ipywidgets",
   "ipywidgets_bokeh",
   "jupyter",
   "notebook",
   "panel",
-  "pydantic",
-  "pyyaml",
   "tornado >=6.1",
-  "voila",
 ]
-
-[project.scripts]
-s2gos = "s2gos.client.cli.main:main"
-
-[project.optional-dependencies]
+server = [
+  "fastapi",
+  "typer",
+  "uvicorn",
+]
 dev = [
   # Build tools
   "build",
