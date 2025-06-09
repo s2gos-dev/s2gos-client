@@ -2,12 +2,12 @@
 #  Permissions are hereby granted under the terms of the Apache 2.0 License:
 #  https://opensource.org/license/apache-2-0.
 
-from generators.common import (
-    S2GOS_PATH,
-    OPEN_API_PATH,
-)
 import datamodel_code_generator as dcg
 
+from generators.common import (
+    OPEN_API_PATH,
+    S2GOS_PATH,
+)
 
 MODELS_PATH = S2GOS_PATH / "common" / "models.py"
 

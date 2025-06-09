@@ -272,7 +272,7 @@ class Schema1(BaseModel):
     additionalProperties: Optional[Union[Schema, Reference, bool]] = True
     description: Optional[str] = None
     format: Optional[str] = None
-    default: Optional[Dict[str, Any]] = None
+    default: Optional[Any] = None
     nullable: Optional[bool] = False
     readOnly: Optional[bool] = False
     writeOnly: Optional[bool] = False

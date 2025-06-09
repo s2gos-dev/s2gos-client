@@ -2,23 +2,23 @@
 #  Permissions are hereby granted under the terms of the Apache 2.0 License:
 #  https://opensource.org/license/apache-2-0.
 
-from typing import Literal, Any
+from typing import Any, Literal
 from unittest import TestCase
 
 from pydantic import BaseModel
 
 from s2gos.client.api import Client
-from s2gos.client.api.service import Service
+from s2gos.client.api.transport import Transport
 from s2gos.common.models import (
+    ConfClasses,
     Exception,
     LandingPage,
-    ConfClasses,
-    ProcessList,
     Process,
+    ProcessList,
 )
 
 
-class TestService(Service):
+class TestTransport(Transport):
     def __init__(self):
         self.call_stack = []
 
@@ -50,19 +50,19 @@ class TestService(Service):
 
 class ClientApiTest(TestCase):
     def setUp(self):
-        self.service = TestService()
-        self.client = Client(service=self.service)
+        self.transport = TestTransport()
+        self.client = Client(_transport=self.transport)
 
-    def assert_service_call_ok(self, expected_kwargs: dict[str, Any]):
-        self.assertEqual(1, len(self.service.call_stack))
+    def assert_transport_ok(self, expected_kwargs: dict[str, Any]):
+        self.assertEqual(1, len(self.transport.call_stack))
         self.assertEqual(
             expected_kwargs,
-            self.service.call_stack[0],
+            self.transport.call_stack[0],
         )
 
     def test_get_landing_page(self):
         result = self.client.get_landing_page()
-        self.assert_service_call_ok(
+        self.assert_transport_ok(
             {
                 "path": "/",
                 "method": "get",
@@ -77,7 +77,7 @@ class ClientApiTest(TestCase):
 
     def test_get_conformance_classes(self):
         result = self.client.get_conformance_classes()
-        self.assert_service_call_ok(
+        self.assert_transport_ok(
             {
                 "path": "/conformance",
                 "method": "get",
@@ -92,7 +92,7 @@ class ClientApiTest(TestCase):
 
     def test_get_processes(self):
         result = self.client.get_processes()
-        self.assert_service_call_ok(
+        self.assert_transport_ok(
             {
                 "path": "/processes",
                 "method": "get",
@@ -107,7 +107,7 @@ class ClientApiTest(TestCase):
 
     def test_get_process_description(self):
         result = self.client.get_process_description(process_id="gobabeb_1")
-        self.assert_service_call_ok(
+        self.assert_transport_ok(
             {
                 "path": "/processes/{processID}",
                 "method": "get",

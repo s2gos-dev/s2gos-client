@@ -28,6 +28,10 @@ dependencies:
   - pytest-cov
   - ruff
   - watchfiles
+  # Pip
   - pip
   - pip:
+    # Dependencies
+    - uri_template
+    # Development Dependencies
     - datamodel-code-generator

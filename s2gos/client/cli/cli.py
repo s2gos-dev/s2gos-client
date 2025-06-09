@@ -66,7 +66,7 @@ def configure(
     server_url: Optional[str] = typer.Option(None, "--url"),
 ):
     """Configure the S2GOS client."""
-    from .config import Config
+    from s2gos.client.config import Config
 
     config = Config.get()
     if not user_name:
@@ -94,7 +94,7 @@ def configure(
         )
     config_path = Config(
         user_name=user_name, access_token=access_token, server_url=server_url
-    ).write()
+    ).store()
     click.echo(f"Configuration written to {config_path}")
 
 
@@ -156,7 +156,7 @@ def get_results(job_ids: list[str]):
 
 
 def _get_config():
-    from .config import Config
+    from s2gos.client.config import Config
 
     config = Config.get()
     if config is None:

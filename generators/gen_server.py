@@ -11,17 +11,16 @@ from generators.common import (
     OPEN_API_PATH,
     S2GOS_PATH,
     camel_to_snake,
-    to_py_type,
     parse_responses,
+    to_py_type,
     write_file,
 )
-from generators.openapi import load_openapi_schema, OASchema, OAMethod
-
+from generators.openapi import OAMethod, OASchema, load_openapi_schema
 
 GENERATOR_NAME = str(Path(__file__).name)
 
 ROUTES_PATH = S2GOS_PATH / "server" / "routes.py"
-SERVICE_PATH = S2GOS_PATH / "server" / "service.py"
+SERVICE_PATH = S2GOS_PATH / "server" / "transport.py"
 
 
 def main():
@@ -34,6 +33,8 @@ def main():
         GENERATOR_NAME,
         ROUTES_PATH,
         [
+            "from fastapi.responses import JSONResponse\n",
+            "\n",
             f"from s2gos.common.models import {model_list}\n",
             "from .app import app\n",
             "from .provider import ServiceProvider\n",
@@ -47,6 +48,8 @@ def main():
         SERVICE_PATH,
         [
             "from abc import ABC, abstractmethod\n",
+            "\n",
+            "from fastapi.responses import JSONResponse\n",
             "\n",
             f"from s2gos.common.models import {model_list}\n",
             "\n",
@@ -125,19 +128,23 @@ def generate_method_code(
     service_param_list = ", ".join(["self", *pos_service_params, *kw_service_params])
     param_service_list = ", ".join([*service_args, *service_kwargs])
 
-    return_types, error_types = parse_responses(method, models, skip_errors=True)
+    return_types_, error_types = parse_responses(method, models, skip_errors=True)
 
+    return_types = list(v[0] for v in return_types_.values())
     if not return_types:
-        return_types = {"200": "None"}
+        return_types = ["None"]
+    return_types.append("JSONResponse")
+    return_types = sorted(return_types)
 
-    return_type_union = " | ".join(set(v[0] for v in return_types.values()))
+    return_type_union = " | ".join(set(return_types))
     py_op_name = camel_to_snake(method.operationId)
     return (
         (
             f"# noinspection PyPep8Naming\n"
             f"@app.{method_name}({path!r})\n"
             f"async def {py_op_name}({param_list})"
-            f" -> {return_type_union}:\n"
+            ":\n"
+            # f" -> {return_type_union}:\n"
             f"{C_TAB}return await ServiceProvider.instance().{py_op_name}({param_service_list})\n"
         ),
         (

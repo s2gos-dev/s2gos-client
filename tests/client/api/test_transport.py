@@ -7,16 +7,16 @@ from unittest import TestCase
 import pytest
 from pydantic import ValidationError
 
-from s2gos.client.api.service import DefaultService
+from s2gos.client.api.transport import DefaultTransport
 from s2gos.common.models import ConfClasses, Exception
 
 
-class DefaultServiceTest(TestCase):
+class DefaultTransportTest(TestCase):
     def test_call_success(self):
-        service = DefaultService()
+        transport = DefaultTransport()
         # The following test is currently just a smoke test, but that's ok
         with pytest.raises(ValidationError, match="conformsTo"):
-            result = service.call(
+            result = transport.call(
                 path="/conformance",
                 method="get",
                 path_params={},

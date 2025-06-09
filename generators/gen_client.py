@@ -2,11 +2,8 @@
 #  Permissions are hereby granted under the terms of the Apache 2.0 License:
 #  https://opensource.org/license/apache-2-0.
 
-import subprocess
 from pathlib import Path
 from typing import Literal
-
-import datetime
 
 from generators.common import (
     C_TAB,
@@ -14,11 +11,11 @@ from generators.common import (
     OPEN_API_PATH,
     S2GOS_PATH,
     camel_to_snake,
-    to_py_type,
     parse_responses,
+    to_py_type,
     write_file,
 )
-from generators.openapi import load_openapi_schema, OASchema, OAMethod
+from generators.openapi import OAMethod, OASchema, load_openapi_schema
 
 GENERATOR_NAME = str(Path(__file__).name)
 
@@ -38,24 +35,24 @@ def main():
             "from typing import Optional\n",
             "\n",
             f"from s2gos.common.models import {model_list}\n",
-            "from .service import DefaultService, Service",
+            "from .transport import DefaultTransport, Transport",
             "\n",
             "class Client:\n",
             f'{C_TAB}"""\n',
             f"{C_TAB}The S2GOS Client API.\n",
             "\n",
             f"{C_TAB}Args:\n",
-            f"{C_TAB}{D_TAB}service: Optional API service instance.\n",
-            f"{C_TAB}{D_TAB}kwargs: "
-            "Configuration passed to `DefaultService` constructor.\n",
-            f"{C_TAB}{D_TAB}{D_TAB}if `service` is not provided.\n",
+            f"{C_TAB}{D_TAB}kwargs: Client configuration. See `DefaultTransport`.\n",
+            f"{C_TAB}{D_TAB}_transport: Optional web API transport (for testing only).\n",
             f'{C_TAB}"""\n',
             "\n",
             f"{C_TAB}def __init__(self, *, "
-            f"service: Optional[Service] = None, **kwargs):\n",
-            f"{C_TAB}{C_TAB}self._service = "
-            "DefaultService(**kwargs) if service is None else service\n",
-            "\n",
+            f"_transport: Optional[Transport] = None, **kwargs):\n",
+            f"{C_TAB}{C_TAB}self._transport = "
+            "DefaultTransport(**kwargs) if _transport is None else _transport\n",
+            f"\n{C_TAB}def _repr_json_(self):\n",
+            f"{C_TAB}{C_TAB}# noinspection PyProtectedMember\n",
+            f"{C_TAB}{C_TAB}return self._transport.config._repr_json_()\n",
             code,
         ],
     )
@@ -142,7 +139,7 @@ def generate_function_code(
         f"{C_TAB}def {camel_to_snake(method.operationId)}({param_list})"
         f" -> {return_type_union}:\n"
         f"{function_doc}"
-        f"{C_TAB}{C_TAB}return self._service.call("
+        f"{C_TAB}{C_TAB}return self._transport.call("
         f"path={path!r}, "
         f"method={method_name!r}, "
         f"path_params={path_param_dict}, "

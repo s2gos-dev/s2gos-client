@@ -4,9 +4,8 @@
 
 import typer
 
+from s2gos.server.defaults import DEFAULT_HOST, DEFAULT_PORT
 from s2gos.version import VERSION
-from .defaults import DEFAULT_HOST, DEFAULT_PORT
-
 
 cli = typer.Typer()
 

@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Annotated, Any, Literal
 
 import yaml
-
 from pydantic import BaseModel, Field
 
 

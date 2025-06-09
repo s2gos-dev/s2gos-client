@@ -8,7 +8,6 @@ import subprocess
 from pathlib import Path
 from typing import Any, Final
 
-
 from .openapi import OAMethod
 
 S2GOS_PATH: Final = (Path(__file__).parent / ".." / "s2gos").resolve()
@@ -41,7 +40,7 @@ def write_file(generator_name: str, file_path: Path, code_lines: list[str]):
 
     print(f"✔ Generated {file_path}")
     subprocess.run(["ruff", "format", str(file_path)])
-    subprocess.run(["ruff", "check", str(file_path)])
+    subprocess.run(["ruff", "check", "--fix", str(file_path)])
 
 
 def parse_responses(

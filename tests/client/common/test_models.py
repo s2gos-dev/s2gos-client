@@ -2,10 +2,9 @@
 #  Permissions are hereby granted under the terms of the Apache 2.0 License:
 #  https://opensource.org/license/apache-2-0.
 
+import inspect
 from enum import Enum
 from unittest import TestCase
-
-import inspect
 
 from pydantic import BaseModel
 
@@ -36,6 +35,8 @@ REQUIRED_MODELS = {
     "ProcessSummary",
     "QualifiedInputValue",
     "Reference",
+    "Schema",
+    "Schema1",
     "StatusInfo",
 }
 

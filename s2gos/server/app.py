@@ -16,5 +16,5 @@ async def json_http_exception_handler(
 ) -> JSONResponse:
     return JSONResponse(
         status_code=exc.status_code,
-        content=exc.content.model_dump(),
+        content=exc.content.model_dump(mode="json"),
     )

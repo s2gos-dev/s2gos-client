@@ -10,7 +10,6 @@ from panel.layout import Panel
 
 from .js2panel import params_schema_to_widgets
 
-
 pn.extension("ipywidgets")
 
 

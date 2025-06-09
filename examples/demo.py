@@ -4,7 +4,6 @@
 
 import s2gos.client.gui as s2g_gui
 
-
 schema = {
     "title": "S2GOS Job Configuration",
     "type": "object",
