@@ -44,7 +44,7 @@ dependencies = [
   "click",
   "pydantic",
   "pyyaml",
-  "uri_template",
+  "uri-template",
 ]
 
 [project.scripts]
