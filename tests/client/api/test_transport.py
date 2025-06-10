@@ -3,22 +3,23 @@
 #  https://opensource.org/license/apache-2-0.
 
 from unittest import TestCase
-
-import pytest
-from pydantic import ValidationError
+from unittest.mock import patch, Mock
 
 from s2gos.client.api.transport import DefaultTransport
 from s2gos.common.models import ConfClasses, Exception
 
 
-# TODO: fix test by mocking requests module
-
-
 class DefaultTransportTest(TestCase):
     def test_call_success(self):
-        transport = DefaultTransport()
-        # The following test is currently just a smoke test, but that's ok
-        with pytest.raises(ValidationError, match="conformsTo"):
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"conformsTo": ["Hello", "World"]}
+        mock_response.raise_for_status.return_value = None
+
+        transport = DefaultTransport(server_url="https://api.example.com")
+        with patch(
+            "s2gos.client.api.transport.requests.request", return_value=mock_response
+        ) as mock_request:
             result = transport.call(
                 path="/conformance",
                 method="get",
@@ -28,4 +29,11 @@ class DefaultTransportTest(TestCase):
                 return_types={"200": ConfClasses},
                 error_types={"401": Exception},
             )
-            self.assertIsInstance(result, ConfClasses)
+            mock_request.assert_called_once_with(
+                "GET",
+                "https://api.example.com/conformance",
+                params={},
+                json=None,
+            )
+
+        self.assertIsInstance(result, ConfClasses)
