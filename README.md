@@ -1,3 +1,8 @@
+[![CI](https://github.com/s2gos-dev/s2gos-client/actions/workflows/tests.yml/badge.svg)](https://github.com/s2gos-dev/s2gos-client/actions/workflows/tests.yml)
+[![codecov](https://codecov.io/gh/s2gos-dev/s2gos-client/graph/badge.svg?token=GVKuJao97t)](https://codecov.io/gh/s2gos-dev/s2gos-client)
+**[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v0.json)](https://github.com/charliermarsh/ruff)**
+[![GitHub License](https://img.shields.io/github/license/s2gos-dev/s2gos-client)](https://github.com/s2gos-dev/s2gos-client)
+
 # DTE-S2GOS Python client
 
 A Python client for the ESA DTE-S2GOS synthetic scene generator service
