@@ -106,6 +106,14 @@ exclude = [
   "docs"
 ]
 
+[tool.coverage.run]
+omit = [
+  # Still experimental
+  "s2gos/client/cli/*",
+  "s2gos/client/gui/*",
+  "s2gos/server/*",
+]
+
 [tool.flake8]
 max-line-length = 88
 

@@ -6,21 +6,21 @@ from typing import Any, Literal
 
 from pydantic import BaseModel
 
-from s2gos.client.api.transport import Transport
-from s2gos.client.config import Config
+from s2gos.client.transport import Transport
+from s2gos.client.config import ClientConfig
 
 
 class MockTransport(Transport):  # pragma: no cover
     def __init__(self):
         self._call_stack = []
-        self._config = Config(server_url="https://s2gos.testing.eu/api")
+        self._config = ClientConfig(server_url="https://s2gos.testing.eu/api")
 
     @property
     def call_stack(self) -> list[dict]:
         return self._call_stack
 
     @property
-    def config(self) -> Config:
+    def config(self) -> ClientConfig:
         return self._config
 
     def call(

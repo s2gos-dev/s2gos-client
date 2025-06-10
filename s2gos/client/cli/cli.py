@@ -56,7 +56,7 @@ You can use shorter command name aliases, e.g., use command name "vr"
 instead of "validate-request", or "lt" instead of "list-templates".
 """
 
-cli = typer.Typer(cls=AliasedGroup, help=HELP)
+cli = typer.Typer(name="s2gos", cls=AliasedGroup, help=HELP)
 
 
 @cli.command()
@@ -66,9 +66,9 @@ def configure(
     server_url: Optional[str] = typer.Option(None, "--url"),
 ):
     """Configure the S2GOS client."""
-    from s2gos.client.config import Config
+    from s2gos.client.config import ClientConfig
 
-    config = Config.get()
+    config = ClientConfig.get()
     if not user_name:
         user_name = click.prompt(
             "User name",
@@ -92,7 +92,7 @@ def configure(
             "Server URL",
             default=(config and config.server_url) or DEFAULT_SERVER_URL,
         )
-    config_path = Config(
+    config_path = ClientConfig(
         user_name=user_name, access_token=access_token, server_url=server_url
     ).store()
     click.echo(f"Configuration written to {config_path}")
@@ -156,12 +156,16 @@ def get_results(job_ids: list[str]):
 
 
 def _get_config():
-    from s2gos.client.config import Config
+    from s2gos.client.config import ClientConfig
 
-    config = Config.get()
+    config = ClientConfig.get()
     if config is None:
         raise click.ClickException(
             "Tool is not yet configured,"
             " please use the 'configure' command to set it up."
         )
     return config
+
+
+if __name__ == "__main__":  # pragma: no cover
+    cli()

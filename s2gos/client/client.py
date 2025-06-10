@@ -16,7 +16,7 @@ from s2gos.common.models import (
     StatusInfo,
 )
 
-from .transport import DefaultTransport, Transport
+from s2gos.client.transport import DefaultTransport, Transport
 
 
 class Client:

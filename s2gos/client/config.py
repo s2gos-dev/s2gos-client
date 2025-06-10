@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from .defaults import DEFAULT_CONFIG_PATH
 
 
-class Config(BaseModel):
+class ClientConfig(BaseModel):
     """Client configuration.
 
     Args:
@@ -31,11 +31,11 @@ class Config(BaseModel):
         )
 
     @classmethod
-    def read(cls, config_path: Optional[str | Path] = None) -> Optional["Config"]:
+    def read(cls, config_path: Optional[str | Path] = None) -> Optional["ClientConfig"]:
         config_path = cls.normalize_config_path(config_path)
 
         default_config_dict = {}
-        for field_name, _field_info in Config.model_fields.items():
+        for field_name, _field_info in ClientConfig.model_fields.items():
             env_var_name = "S2GOS_" + field_name.upper()
             if env_var_name in os.environ:
                 default_config_dict[field_name] = os.environ[env_var_name]
@@ -48,7 +48,7 @@ class Config(BaseModel):
                 for k, v in default_config_dict.items():
                     if k not in config_dict:
                         config_dict[k] = v
-        return Config.model_validate(config_dict)
+        return ClientConfig.model_validate(config_dict)
 
     def write(self, config_path: Optional[str | Path] = None) -> Path:
         config_path = self.normalize_config_path(config_path)

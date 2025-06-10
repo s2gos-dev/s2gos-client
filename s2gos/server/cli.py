@@ -42,5 +42,5 @@ def run_server(**kwargs):
     uvicorn.run("s2gos.server.main:app", **kwargs)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     cli()

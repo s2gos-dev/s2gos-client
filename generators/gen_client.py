@@ -19,7 +19,7 @@ from generators.openapi import OAMethod, OASchema, load_openapi_schema
 
 GENERATOR_NAME = str(Path(__file__).name)
 
-CLIENT_PATH = S2GOS_PATH / "client" / "api" / "client.py"
+CLIENT_PATH = S2GOS_PATH / "client" / "client.py"
 
 
 def main():

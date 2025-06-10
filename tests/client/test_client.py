@@ -4,7 +4,7 @@
 
 from unittest import TestCase
 
-from s2gos.client.api import Client
+from s2gos.client import Client
 from s2gos.common.models import (
     ConfClasses,
     LandingPage,
@@ -19,7 +19,7 @@ from s2gos.common.models import (
 from tests.client.helpers import MockTransport
 
 
-class ClientApiTest(TestCase):
+class ClientTest(TestCase):
     def setUp(self):
         self.transport = MockTransport()
         self.client = Client(_transport=self.transport)

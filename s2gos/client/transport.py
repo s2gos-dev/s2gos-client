@@ -12,7 +12,8 @@ import requests
 import uri_template
 from pydantic import BaseModel
 
-from s2gos.client.config import Config
+from s2gos.client.exceptions import ClientException
+from s2gos.client.config import ClientConfig
 from s2gos.client.defaults import DEFAULT_SERVER_URL
 
 
@@ -21,7 +22,7 @@ class Transport(ABC):
 
     @property
     @abstractmethod
-    def config(self) -> Config:
+    def config(self) -> ClientConfig:
         """The configuration."""
 
     @abstractmethod
@@ -54,9 +55,9 @@ class DefaultTransport(Transport):
         server_url: Optional[str] = None,
         debug: bool = False,
     ):
-        default_config = Config.read(config_path=config_path)
+        default_config = ClientConfig.read(config_path=config_path)
 
-        self._config = Config(
+        self._config = ClientConfig(
             user_name=user_name or default_config.user_name,
             access_token=access_token or default_config.access_token,
             server_url=server_url or default_config.server_url or DEFAULT_SERVER_URL,
@@ -65,7 +66,7 @@ class DefaultTransport(Transport):
         self.debug = debug
 
     @property
-    def config(self) -> Config:
+    def config(self) -> ClientConfig:
         return self._config
 
     def call(
@@ -114,18 +115,24 @@ class DefaultTransport(Transport):
             params=query_params,
             json=data,
         )
+
+        response_value = response.json()
+
         if response.ok:
             status_key = str(response.status_code)
             return_type = return_types.get(status_key)
-            if return_type is None:
-                return_type = return_types.get("200")
             if (
                 return_type is not None
                 and inspect.isclass(return_type)
                 and issubclass(return_type, BaseModel)
             ):
-                return return_type.model_validate(response.json())
-            return response.json()
-        else:
-            # TODO: raise dedicated ClientException
-            raise ValueError(response.json())
+                return return_type.model_validate(response_value)
+            else:
+                return response_value
+
+        kwargs = {}
+        if isinstance(response_value, dict):
+            kwargs = dict(
+                title=response_value.get("title"), detail=response_value.get("detail")
+            )
+        raise ClientException(response.status_code, response.reason, **kwargs)
