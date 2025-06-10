@@ -11,6 +11,27 @@ mamba env create -f ./environment.yml
 conda activate s2gos
 pip install -ve . 
 ```
+### Formatting
+
+```commandline
+isort .
+```
+
+```commandline
+ruff format 
+```
+
+### Linting
+
+```commandline
+ruff check
+```
+
+### Testing & Coverage
+
+```commandline
+pytest --cov s2gos --cov-report html tests
+```
 
 ### Code generation
 

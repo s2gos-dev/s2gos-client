@@ -55,3 +55,21 @@ class ModelsTest(TestCase):
         )
 
         self.assertSetEqual(set(), REQUIRED_MODELS - all_models)
+
+    def test_models_have_repr_json(self):
+        for name, obj in inspect.getmembers(s2g_models, inspect.isclass):
+            if name in REQUIRED_MODELS and issubclass(obj, BaseModel):
+                self.assertTrue(hasattr(obj, "_repr_json_"), msg=f"model {name}")
+
+        obj = s2g_models.Bbox(bbox=[10, 20, 30, 40])
+        json_repr = obj._repr_json_()
+        self.assertEqual(
+            (
+                {
+                    "bbox": [10.0, 20.0, 30.0, 40.0],
+                    "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                },
+                {"root": "Bbox object:"},
+            ),
+            json_repr,
+        )

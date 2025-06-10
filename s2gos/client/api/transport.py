@@ -19,6 +19,11 @@ from s2gos.client.defaults import DEFAULT_SERVER_URL
 class Transport(ABC):
     """Abstraction of the transport that calls the S2GOS web API."""
 
+    @property
+    @abstractmethod
+    def config(self) -> Config:
+        """The configuration."""
+
     @abstractmethod
     def call(
         self,
@@ -51,13 +56,17 @@ class DefaultTransport(Transport):
     ):
         default_config = Config.read(config_path=config_path)
 
-        self.config = Config(
+        self._config = Config(
             user_name=user_name or default_config.user_name,
             access_token=access_token or default_config.access_token,
             server_url=server_url or default_config.server_url or DEFAULT_SERVER_URL,
         )
 
         self.debug = debug
+
+    @property
+    def config(self) -> Config:
+        return self._config
 
     def call(
         self,
