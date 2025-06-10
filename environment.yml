@@ -19,6 +19,7 @@ dependencies:
   - uri-template
   - uvicorn
   # Development Dependencies
+  - datamodel-code-generator
   - isort
   - mkdocs
   - mkdocs-autorefs
@@ -29,8 +30,3 @@ dependencies:
   - pytest-cov
   - ruff
   - watchfiles
-  # Pip
-  - pip
-  - pip:
-    # Development Dependencies
-    - datamodel-code-generator
