@@ -94,7 +94,7 @@ class DefaultTransport(Transport):
             )
 
         data = (
-            request.model_dump(mode="json")
+            request.model_dump(mode="json", by_alias=True, exclude_none=True)
             if isinstance(request, BaseModel)
             else request
         )

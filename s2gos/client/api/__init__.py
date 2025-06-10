@@ -26,7 +26,9 @@ def _add_members(module, predicate):
 
 
 def _repr_base_model_as_json(self: BaseModel):
-    return self.model_dump(mode="json"), dict(root=self.__class__.__name__ + " object:")
+    return self.model_dump(mode="json", by_alias=True, exclude_none=True), dict(
+        root=self.__class__.__name__ + " object:"
+    )
 
 
 _add_members(models, inspect.isclass)

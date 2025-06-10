@@ -11,6 +11,9 @@ from s2gos.client.api.transport import DefaultTransport
 from s2gos.common.models import ConfClasses, Exception
 
 
+# TODO: fix test by mocking requests module
+
+
 class DefaultTransportTest(TestCase):
     def test_call_success(self):
         transport = DefaultTransport()

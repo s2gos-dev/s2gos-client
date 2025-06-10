@@ -26,7 +26,9 @@ class Config(BaseModel):
     server_url: Optional[str] = None
 
     def _repr_json_(self):
-        return self.model_dump(mode="json"), dict(root="Configuration:")
+        return self.model_dump(mode="json", by_alias=True, exclude_none=True), dict(
+            root="Configuration:"
+        )
 
     @classmethod
     def read(cls, config_path: Optional[str | Path] = None) -> Optional["Config"]:
@@ -52,7 +54,9 @@ class Config(BaseModel):
         config_path = self.normalize_config_path(config_path)
         config_path.parent.mkdir(exist_ok=True)
         with config_path.open("wt") as stream:
-            yaml.dump(self.model_dump(mode="json"), stream)
+            yaml.dump(
+                self.model_dump(mode="json", by_alias=True, exclude_none=True), stream
+            )
         return config_path
 
     @classmethod
