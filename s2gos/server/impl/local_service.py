@@ -164,13 +164,31 @@ class LocalService(Service):
         if process_id not in _processes_dict:
             raise JSONContentException(404, detail=f"Process {process_id!r} not found")
 
-        inputs = request.model_dump(mode="json", include={"inputs"}).get("inputs") or {}
+        process_info = _processes_dict[process_id]
+        input_params = (
+            request.model_dump(mode="json", include={"inputs"}).get("inputs") or {}
+        )
+        input_default_params = {
+            input_name: input_info.schema_.default
+            for input_name, input_info in process_info.inputs.items()
+            if input_info.schema_.default is not None
+        }
+        params = {}
+        for input_name in process_info.inputs.keys():
+            if input_name in input_params:
+                params[input_name] = input_params[input_name]
+            elif input_name in input_default_params:
+                params[input_name] = input_default_params[input_name]
+
+        print("input_params:", input_params)
+        print("input_default_params:", input_default_params)
+        print("params:", params)
 
         job_id = f"job_{len(self.jobs)}"
         job = Job(
             process_id=process_id,
             job_id=job_id,
-            **inputs,
+            **params,
         )
         self.jobs[job_id] = job
         self.executor.submit(job.run)

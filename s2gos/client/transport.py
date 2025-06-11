@@ -12,9 +12,9 @@ import requests
 import uri_template
 from pydantic import BaseModel
 
-from s2gos.client.exceptions import ClientException
 from s2gos.client.config import ClientConfig
 from s2gos.client.defaults import DEFAULT_SERVER_URL
+from s2gos.client.exceptions import ClientException
 
 
 class Transport(ABC):
