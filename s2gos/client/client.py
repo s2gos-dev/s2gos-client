@@ -4,6 +4,7 @@
 
 from typing import Optional
 
+from s2gos.client.transport import DefaultTransport, Transport
 from s2gos.common.models import (
     ConfClasses,
     Exception,
@@ -16,21 +17,19 @@ from s2gos.common.models import (
     StatusInfo,
 )
 
-from s2gos.client.transport import DefaultTransport, Transport
-
 
 class Client:
     """
     The S2GOS Client API.
 
     Args:
-      kwargs: Client configuration. See `DefaultTransport`.
+      config: Client configuration. See `DefaultTransport`.
       _transport: Optional web API transport (for testing only).
     """
 
-    def __init__(self, *, _transport: Optional[Transport] = None, **kwargs):
+    def __init__(self, *, _transport: Optional[Transport] = None, **config):
         self._transport = (
-            DefaultTransport(**kwargs) if _transport is None else _transport
+            DefaultTransport(**config) if _transport is None else _transport
         )
 
     def _repr_json_(self):

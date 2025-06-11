@@ -4,8 +4,9 @@
 
 import panel as pn
 
+from .client import Client
 from .create import create
 
-__all__ = ["create"]
+__all__ = ["Client", "create"]
 
-pn.extension("ipywidgets")
+pn.extension("ipywidgets", "tabulator")
