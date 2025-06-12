@@ -7,7 +7,7 @@ import os
 
 from . import routes
 from .app import app
-from .impl.local_service import LocalService
+from .local.local_service import LocalService
 from .provider import ServiceProvider
 
 

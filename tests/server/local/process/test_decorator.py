@@ -5,8 +5,8 @@
 from unittest import TestCase
 
 from s2gos.common.models import Process
-from s2gos.server.impl.registry import ProcessRegistry
-from s2gos.server.impl.decorators import process
+from s2gos.server.local.process.registry import ProcessRegistry
+from s2gos.server.local.process.decorator import process
 
 
 class DecorateProcessTest(TestCase):
