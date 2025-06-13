@@ -139,7 +139,7 @@ def _schema_from_parameter(fn_name: str, parameter: inspect.Parameter) -> Schema
         fn_name,
         parameter.name,
         _normalize_inspect_value(parameter.annotation, default=Any),
-        default=_normalize_inspect_value(parameter.annotation, default=...),
+        default=_normalize_inspect_value(parameter.default, default=...),
     ).get_schema()
 
 
