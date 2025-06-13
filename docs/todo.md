@@ -3,10 +3,18 @@
 The DTE-S2GOS client is currently under development.
 Given here are the issues that will be addressed next.
 
+## Repo/package setup
+
+* Move all source code into `src` folder
+* Use either `uv` or `pixi` for package and environment management.
+
+
 ## Client implementation
 
 Enhance the API Client
 
+- Consider generating a higher-level client from the 
+  OGC API Processes descriptions
 - Address the user-facing issues given under [Code generation](#code_generation)
 
 Enhance the GUI Client
@@ -24,7 +32,8 @@ Implement CLI commands
 
 ## Server implementation
 
-* Implement 
+* Implement local service that can invoke any Python function
+* Implement Airflow-based service
 
 ## Authentication
 
