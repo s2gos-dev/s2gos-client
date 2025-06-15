@@ -28,7 +28,13 @@ class Client(GeneratedClient):
 
     def show_jobs(self):
         if self._jobs_table is None:
-            self._jobs_table = JobsTable(self._get_jobs())
+            self._jobs_table = JobsTable(
+                self._get_jobs(),
+                on_cancel_jobs=self.on_cancel_jobs,
+                on_delete_jobs=self.on_delete_jobs,
+                on_restart_jobs=self.on_restart_jobs,
+                on_get_job_results=self.on_get_job_results,
+            )
 
         if self._update_thread is None or not self._update_thread.is_alive():
             self._update_thread = threading.Thread(
@@ -40,6 +46,21 @@ class Client(GeneratedClient):
 
     def stop_updating(self):
         self._update_thread = None
+
+    def on_cancel_jobs(self, job_ids: list[str]):
+        for job_id in job_ids:
+            self.dismiss(job_id)
+
+    def on_delete_jobs(self, job_ids: list[str]):
+        for job_id in job_ids:
+            self.dismiss(job_id)
+
+    def on_restart_jobs(self, _job_ids: list[str]):
+        print("Not implemented.")
+
+    def on_get_job_results(self, _job_ids: list[str]):
+        print("Not implemented.")
+        return []
 
     def __delete__(self, instance):
         self._update_thread = None

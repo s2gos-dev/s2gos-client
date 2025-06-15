@@ -27,6 +27,13 @@ from .job import Job
 from .process_registry import ProcessRegistry
 
 
+model_dump_config = dict(
+    exclude_none=True,
+    exclude_unset=True,
+    exclude_defaults=True,
+)
+
+
 class LocalService(Service):
     def __init__(
         self,
@@ -61,7 +68,10 @@ class LocalService(Service):
         return ProcessList(
             processes=[
                 ProcessSummary(
-                    **p.model_dump(mode="python", exclude={"inputs", "outputs"})
+                    **p.model_dump(
+                        mode="python",
+                        exclude={"inputs", "outputs"},
+                    )
                 )
                 for p in self.process_registry.get_process_list()
             ],
@@ -69,16 +79,11 @@ class LocalService(Service):
         )
 
     async def get_process_description(self, process_id: str) -> Process:
-        process_entry = self.process_registry.get_entry(process_id)
-        if process_entry is None:
-            raise JSONContentException(404, detail=f"Process {process_id!r} not found")
+        process_entry = self._get_process_entry(process_id)
         return process_entry.process
 
     async def execute(self, process_id: str, request: Execute) -> JSONResponse:
-        process_entry = self.process_registry.get_entry(process_id)
-        if process_entry is None:
-            raise JSONContentException(404, detail=f"Process {process_id!r} not found")
-
+        process_entry = self._get_process_entry(process_id)
         process_info = process_entry.process
 
         input_params = (
@@ -118,28 +123,25 @@ class LocalService(Service):
         return JobList(jobs=[job.status_info for job in self.jobs.values()], links=[])
 
     async def get_status(self, job_id: str) -> StatusInfo:
-        job = self._get_job(job_id, messages={})
+        job = self._get_job(job_id, forbidden_status_codes={})
         return job.status_info
 
     async def dismiss(self, job_id: str) -> StatusInfo:
-        job = self._get_job(job_id, messages={})
-        job.cancel()
+        job = self._get_job(job_id, forbidden_status_codes={})
+        if job.status_info.status in (StatusCode.accepted, StatusCode.running):
+            job.cancel()
+        elif job.status_info.status in (
+            StatusCode.dismissed,
+            StatusCode.successful,
+            StatusCode.failed,
+        ):
+            del self.jobs[job_id]
         return job.status_info
-
-    async def delete(self, job_id: str) -> None:
-        self._get_job(
-            job_id,
-            messages={
-                StatusCode.accepted: "is already accepted",
-                StatusCode.running: "is still running",
-            },
-        )
-        del self.jobs[job_id]
 
     async def get_result(self, job_id: str) -> Results:
         job = self._get_job(
             job_id,
-            messages={
+            forbidden_status_codes={
                 StatusCode.accepted: "has not started yet",
                 StatusCode.running: "is still running",
                 StatusCode.dismissed: "has been cancelled",
@@ -171,11 +173,21 @@ class LocalService(Service):
         """Register a user function as process."""
         return self.process_registry.register_function(function, **kwargs)
 
-    def _get_job(self, job_id: str, messages: dict[StatusCode, str]) -> Job:
+    def _get_process_entry(self, process_id: str) -> ProcessRegistry.Entry:
+        process_entry = self.process_registry.get_entry(process_id)
+        if process_entry is None:
+            raise JSONContentException(
+                404, detail=f"Process {process_id!r} does not exist"
+            )
+        return process_entry
+
+    def _get_job(
+        self, job_id: str, forbidden_status_codes: dict[StatusCode, str]
+    ) -> Job:
         job = self.jobs.get(job_id)
         if job is None:
             raise JSONContentException(404, detail=f"Job {job_id!r} does not exist")
-        detail = messages.get(job.status_info.status)
-        if detail:
-            raise JSONContentException(403, detail=f"Job {job_id!r} {detail}")
+        message = forbidden_status_codes.get(job.status_info.status)
+        if message:
+            raise JSONContentException(403, detail=f"Job {job_id!r} {message}")
         return job

@@ -24,9 +24,9 @@ Enhance the GUI Client
   - Add an action row with actions applicable to the current table selection
   - Actions:
     - ⬇️ get job result(s)
-    - ✖️ dismiss job(s)
+    - ✖️ cancel accepted/running job(s)
     - ♻️️ restart dismissed/failed job(s)
-    - ❌ delete job(s)
+    - ❌ delete successful/dismissed/failed job(s)
 - `show_processes()`
 - `show_process(process_id: str = None, job_id: str = None, editable: bool = True)`
 - `show_job(job_id: str = None)`
@@ -58,7 +58,7 @@ Implement CLI commands
 
 ## Error handling
 
-* We currently only have no error management in client. 
+* We currently have no error management in client. 
   Handle ClientException so users understand what went wrong:
   - Python API
   - CLI
