@@ -2,13 +2,12 @@
 #  Permissions are hereby granted under the terms of the Apache 2.0 License:
 #  https://opensource.org/license/apache-2-0.
 
-import datetime
 import copy
-from types import GenericAlias, UnionType, NoneType
-from typing import Any, get_args, get_origin, Union, TypeAlias
+import datetime
+from types import GenericAlias, NoneType, UnionType
+from typing import Any, TypeAlias, Union, get_args, get_origin
 
 from s2gos.common.models import Schema
-
 
 Annotation: TypeAlias = type | GenericAlias | UnionType | NoneType
 

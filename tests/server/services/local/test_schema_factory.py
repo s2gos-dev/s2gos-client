@@ -1,13 +1,13 @@
 #  Copyright (c) 2025 by ESA DTE-S2GOS team and contributors
 #  Permissions are hereby granted under the terms of the Apache 2.0 License:
 #  https://opensource.org/license/apache-2-0.
-from typing import Any, Tuple, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 from unittest import TestCase
 
 import pytest
 
 from s2gos.common.models import Schema
-from s2gos.server.local.process.schema import SchemaFactory
+from s2gos.server.services.local.schema_factory import SchemaFactory
 from tests.helpers import BaseModelMixin
 
 

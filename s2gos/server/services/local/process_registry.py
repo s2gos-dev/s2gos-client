@@ -2,32 +2,29 @@
 #  Permissions are hereby granted under the terms of the Apache 2.0 License:
 #  https://opensource.org/license/apache-2-0.
 
+import dataclasses
+import inspect
 from typing import (
+    Any,
     Callable,
     Optional,
     get_args,
     get_origin,
-    Any,
 )
-import inspect
-import dataclasses
 
-from s2gos.common.models import Process, InputDescription, OutputDescription, Schema
-from .schema import Annotation, SchemaFactory
-
-
-@dataclasses.dataclass
-class ProcessRegistryEntry:
-    function: Callable
-    signature: inspect.Signature
-    process: Process
+from s2gos.common.models import InputDescription, OutputDescription, Process, Schema
+from s2gos.server.services.local.schema_factory import Annotation, SchemaFactory
 
 
 class ProcessRegistry:
-    default: "ProcessRegistry"
+    @dataclasses.dataclass
+    class Entry:
+        function: Callable
+        signature: inspect.Signature
+        process: Process
 
     def __init__(self):
-        self._dict: dict[str, ProcessRegistryEntry] = {}
+        self._dict: dict[str, ProcessRegistry.Entry] = {}
 
     def get_process_list(self) -> list[Process]:
         return [v.process for v in self._dict.values()]
@@ -36,7 +33,12 @@ class ProcessRegistry:
         entry = self._dict.get(process_id)
         return entry.process if entry is not None else None
 
-    def register_function(self, function: Callable, **kwargs) -> ProcessRegistryEntry:
+    def get_entry(self, process_id: str) -> Optional["ProcessRegistry.Entry"]:
+        return self._dict.get(process_id)
+
+    def register_function(
+        self, function: Callable, **kwargs
+    ) -> "ProcessRegistry.Entry":
         if not inspect.isfunction(function):
             raise ValueError("function argument must be callable")
 
@@ -58,7 +60,7 @@ class ProcessRegistry:
         else:
             outputs = _complete_outputs(fn_name, signature, outputs)
 
-        entry = ProcessRegistryEntry(
+        entry = ProcessRegistry.Entry(
             function,
             signature,
             Process(
@@ -74,15 +76,13 @@ class ProcessRegistry:
         return entry
 
 
-ProcessRegistry.default = ProcessRegistry()
-
-
 def _generate_inputs(
     fn_name: str, signature: inspect.Signature
 ) -> dict[str, InputDescription]:
     return {
         param_name: _generate_input(fn_name, param)
         for param_name, param in signature.parameters.items()
+        if param_name != "ctx"
     }
 
 

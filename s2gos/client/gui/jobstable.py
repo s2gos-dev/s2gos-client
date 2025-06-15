@@ -6,7 +6,7 @@ import pandas as pd
 import panel as pn
 from panel.models.tabulator import CellClickEvent
 
-from s2gos.common.models import JobList, StatusInfo, StatusCode
+from s2gos.common.models import JobList, StatusCode, StatusInfo
 
 # Style the action column for hover effect
 style = """

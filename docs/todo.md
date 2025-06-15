@@ -19,9 +19,16 @@ Enhance the API Client
 
 Enhance the GUI Client
 
+- `show_jobs()`: 
+  - **DONE**: use `Tabulator`
+  - Add an action row with actions applicable to the current table selection
+  - Actions:
+    - ⬇️ get job result(s)
+    - ✖️ dismiss job(s)
+    - ♻️️ restart dismissed/failed job(s)
+    - ❌ delete job(s)
 - `show_processes()`
 - `show_process(process_id: str = None, job_id: str = None, editable: bool = True)`
-- `show_jobs()` with cancel option
 - `show_job(job_id: str = None)`
 
 Implement CLI commands
@@ -32,7 +39,7 @@ Implement CLI commands
 
 ## Server implementation
 
-* Implement local service that can invoke any Python function
+* **DONE**: Implement local service that can invoke any Python function
 * Implement Airflow-based service
 
 ## Authentication
@@ -68,6 +75,8 @@ The output of `generators/gen_models` is not satisfying:
 3. Generated class names like `Exception` clash with predefined Python names.
 4. Some generated class names are rather unintuitive, e.g., 
    `Execute` instead of `Request`.
+5. Generated JSON is too verbose. Avoid including `None` fields and 
+   fields that have default values.
 
 - Adjust `s2gos/common/openapi.yaml` to fix the above and/or
 - Configure `datamodel-code-generator` to fix the above and/or

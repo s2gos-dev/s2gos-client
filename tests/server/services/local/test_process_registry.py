@@ -5,13 +5,13 @@
 from unittest import TestCase
 
 from s2gos.common.models import (
-    Process,
     InputDescription,
-    Schema,
     OutputDescription,
+    Process,
+    Schema,
     Type1,
 )
-from s2gos.server.local.process.registry import ProcessRegistry, ProcessRegistryEntry
+from s2gos.server.services.local import ProcessRegistry
 from tests.helpers import BaseModelMixin
 
 
@@ -30,11 +30,13 @@ class ProcessRegistryTest(BaseModelMixin, TestCase):
         registry = ProcessRegistry()
 
         entry = registry.register_function(f1)
-        self.assertIsInstance(entry, ProcessRegistryEntry)
+        self.assertIsInstance(entry, ProcessRegistry.Entry)
         self.assertIs(f1, entry.function)
         process = entry.process
         self.assertIsInstance(process, Process)
-        self.assertEqual("tests.server.local.process.test_registry:f1", process.id)
+        self.assertEqual(
+            "tests.server.services.local.test_process_registry:f1", process.id
+        )
         self.assertEqual("0.0.0", process.version)
         self.assertEqual(None, process.title)
         self.assertEqual("This is f1.", process.description)
@@ -59,11 +61,13 @@ class ProcessRegistryTest(BaseModelMixin, TestCase):
         registry = ProcessRegistry()
 
         entry = registry.register_function(f2)
-        self.assertIsInstance(entry, ProcessRegistryEntry)
+        self.assertIsInstance(entry, ProcessRegistry.Entry)
         self.assertIs(f2, entry.function)
         process = entry.process
         self.assertIsInstance(process, Process)
-        self.assertEqual("tests.server.local.process.test_registry:f2", process.id)
+        self.assertEqual(
+            "tests.server.services.local.test_process_registry:f2", process.id
+        )
         self.assertEqual("0.0.0", process.version)
         self.assertEqual(None, process.title)
         self.assertEqual("This is f2.", process.description)
@@ -98,7 +102,7 @@ class ProcessRegistryTest(BaseModelMixin, TestCase):
         registry = ProcessRegistry()
 
         e1 = registry.register_function(f1, id="foo", version="1.0.2", title="My Foo")
-        self.assertIsInstance(e1, ProcessRegistryEntry)
+        self.assertIsInstance(e1, ProcessRegistry.Entry)
         self.assertIs(f1, e1.function)
         p1 = e1.process
         self.assertIsInstance(p1, Process)
