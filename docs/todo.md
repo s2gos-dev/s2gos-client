@@ -5,8 +5,9 @@ Given here are the issues that will be addressed next.
 
 ## Repo/package setup
 
-* Move all source code into `src` folder
+* Move all source code into `src` folder.
 * Use either `uv` or `pixi` for package and environment management.
+* Align `ruff` settings with other [S2GOS repos](https://github.com/s2gos-dev).
 
 
 ## Client implementation
