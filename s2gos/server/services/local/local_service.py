@@ -100,9 +100,9 @@ class LocalService(Service):
             elif input_name in input_default_params:
                 function_kwargs[input_name] = input_default_params[input_name]
 
-        print("input_params:", input_params)
-        print("input_default_params:", input_default_params)
-        print("params:", function_kwargs)
+        # print("input_params:", input_params)
+        # print("input_default_params:", input_default_params)
+        # print("params:", function_kwargs)
 
         job_id = f"job_{len(self.jobs)}"
         job = Job(
