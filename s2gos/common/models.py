@@ -189,7 +189,7 @@ class Schema(BaseModel):
     allOf: Optional[List[Union[Schema, Reference]]] = None
     oneOf: Optional[List[Union[Schema, Reference]]] = None
     anyOf: Optional[List[Union[Schema, Reference]]] = None
-    items: Optional[Union[Schema, Reference]] = None
+    items: Optional[Union[list[Union[Schema, Reference]], Schema, Reference]] = None
     properties: Optional[Dict[str, Union[Schema, Reference]]] = None
     additionalProperties: Optional[Union[Schema, Reference, bool]] = True
     description: Optional[str] = None

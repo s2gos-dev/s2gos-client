@@ -7,20 +7,22 @@ import os
 
 from . import routes
 from .app import app
-from .impl.local_service import LocalService
+from .constants import S2GOS_SERVICE_ENV_VAR
 from .provider import ServiceProvider
 
 
 def get_service():
-    service_class_spec = os.environ.get("S2GOS_SERVICE_CLASS")
-    if service_class_spec is None:
-        # TODO: replace by true S2GOS service
-        return LocalService()
-    else:
-        module_name, class_name = service_class_spec.split(":", maxsplit=1)
-        module = importlib.import_module(module_name)
-        service_cls = getattr(module, class_name)
-        return service_cls()
+    service_impl_spec = os.environ.get(S2GOS_SERVICE_ENV_VAR)
+    if not service_impl_spec:
+        raise RuntimeError(
+            "Error: Service not specified. "
+            f"Please set environment variable {S2GOS_SERVICE_ENV_VAR!r}."
+        )
+    module_name, class_name = service_impl_spec.split(":", maxsplit=1)
+    module = importlib.import_module(module_name)
+    service = getattr(module, class_name)
+    print(f"Running service {service}")
+    return service
 
 
 ServiceProvider.set_instance(get_service())
