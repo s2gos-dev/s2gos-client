@@ -26,7 +26,6 @@ from s2gos.server.service import Service
 from .job import Job
 from .process_registry import ProcessRegistry
 
-
 model_dump_config = dict(
     exclude_none=True,
     exclude_unset=True,

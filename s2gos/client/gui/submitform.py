@@ -7,7 +7,7 @@ from typing import Any, Callable, TypeAlias
 import panel as pn
 import param
 
-from s2gos.common.models import ProcessSummary, Process
+from s2gos.common.models import Execute, Process, ProcessSummary
 
 SubmitRequestAction: TypeAlias = Callable[[dict[str, Any]], Any]
 GetProcessAction: TypeAlias = Callable[[str], Process]
@@ -15,7 +15,10 @@ GetProcessAction: TypeAlias = Callable[[str], Process]
 
 class SubmitForm(pn.viewable.Viewer):
     _process_summaries = param.List(default=[], doc="List of process summaries")
-    _processes = param.Dict(default=[], doc="Dictionary of cached processes")
+    _processes = param.Dict(default={}, doc="Dictionary of cached processes")
+    _execute = param.Parameter(
+        default=Execute(), doc="Currently edited processing request"
+    )
 
     def __init__(
         self,
