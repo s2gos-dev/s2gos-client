@@ -71,7 +71,7 @@ python -m generators.gen_client_cli_md
 ### Run server
 
 ```commandline
-s2gos-server dev
+s2gos-server dev --service=s2gos.server.services.local.testing:service
 ```
 
 or using FastAPI CLI
@@ -86,7 +86,16 @@ $ fastapi dev s2gos/server/main.py
 from s2gos.client.api import Client
 
 client = Client()
-client.get_landing_page()
+client.get_jobs()
+```
+
+### Run client GUI
+
+```python
+from s2gos.client.gui import Client
+
+client = Client()
+client.show_jobs()
 ```
 
 ### Run client CLI
@@ -95,7 +104,7 @@ client.get_landing_page()
 $ s2gos --help
 ```
 
-### Run client GUI 
+### Run client GUI demo code 
 
 Run via panel server:
 
