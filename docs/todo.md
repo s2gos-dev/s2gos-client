@@ -12,6 +12,13 @@ Given here are the issues that will be addressed next.
 
 ## Client implementation
 
+General design
+
+- We need two API Client API versions: sync and async
+  - generate them using [`httpx`](https://github.com/encode/httpx), which 
+    should replace currently used `requests`
+  - use the async version in the Client GUI 
+
 Enhance the API Client
 
 - Consider generating a higher-level client from the 
@@ -28,6 +35,7 @@ Enhance the GUI Client
     - ✖️ cancel accepted/running job(s)
     - ♻️️ restart dismissed/failed job(s)
     - ❌ delete successful/dismissed/failed job(s)
+- `show_submitter()`
 - `show_processes()`
 - `show_process(process_id: str = None, job_id: str = None, editable: bool = True)`
 - `show_job(job_id: str = None)`
