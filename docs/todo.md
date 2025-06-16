@@ -20,14 +20,15 @@ Enhance the API Client
 
 Enhance the GUI Client
 
-- `show_jobs()`: 
+- `show_jobs()` - show all jobs in a table and provide actions on job selection: 
   - **DONE**: use `Tabulator`
   - Add an action row with actions applicable to the current table selection
   - Actions:
-    - ⬇️ get job result(s)
-    - ✖️ cancel accepted/running job(s)
+    - **DONE**: ✖️ cancel accepted/running job(s)
+    - **DONE**: ❌ delete successful/dismissed/failed job(s)
     - ♻️️ restart dismissed/failed job(s)
-    - ❌ delete successful/dismissed/failed job(s)
+    - ⬇️ get job result(s)
+- `show_submitter()` - show a process selector any dynamically adjust inputs and outputs
 - `show_processes()`
 - `show_process(process_id: str = None, job_id: str = None, editable: bool = True)`
 - `show_job(job_id: str = None)`
