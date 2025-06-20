@@ -1,3 +1,7 @@
+## Changes in version 0.0.4 (in development)
+
+* Added basic request submit form to client GUI.
+
 ## Changes in version 0.0.3 (not released)
 
 * Server now has a new option `--service` to specify the service implementation.

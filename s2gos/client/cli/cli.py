@@ -68,7 +68,7 @@ def configure(
     """Configure the S2GOS client."""
     from s2gos.client.config import ClientConfig
 
-    config = ClientConfig.get()
+    config = ClientConfig.read()
     if not user_name:
         user_name = click.prompt(
             "User name",
@@ -94,7 +94,7 @@ def configure(
         )
     config_path = ClientConfig(
         user_name=user_name, access_token=access_token, server_url=server_url
-    ).store()
+    ).write()
     click.echo(f"Configuration written to {config_path}")
 
 
@@ -158,7 +158,7 @@ def get_results(job_ids: list[str]):
 def _get_config():
     from s2gos.client.config import ClientConfig
 
-    config = ClientConfig.get()
+    config = ClientConfig.read()
     if config is None:
         raise click.ClickException(
             "Tool is not yet configured,"

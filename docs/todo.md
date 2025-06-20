@@ -12,6 +12,13 @@ Given here are the issues that will be addressed next.
 
 ## Client implementation
 
+General design
+
+- We need two API Client API versions: sync and async
+  - generate them using [`httpx`](https://github.com/encode/httpx), which 
+    should replace currently used `requests`
+  - use the async version in the Client GUI 
+
 Enhance the API Client
 
 - Consider generating a higher-level client from the 

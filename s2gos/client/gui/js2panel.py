@@ -9,8 +9,8 @@ import param
 
 from .bboxselect import BoundingBoxSelector
 
-TYPES = "boolean", "number", "string", "array"
-DEFAULTS = {"boolean": False, "number": 0, "string": ""}
+TYPES = "boolean", "integer", "number", "string", "array"
+DEFAULTS = {"boolean": False, "integer": 0, "number": 0.0, "string": "", "array": []}
 
 
 def params_schema_to_widgets(schema: dict[str, Any]) -> dict[str, param.Parameterized]:
@@ -30,7 +30,9 @@ def param_schema_to_widget(
         raise ValueError("missing 'type' property")
     type_ = param_schema["type"]
     if not isinstance(type_, str) or type_ not in TYPES:
-        raise ValueError(f"value of 'type' property must be one of {TYPES}")
+        raise ValueError(
+            f"value of 'type' property must be one of {TYPES}, was {type_!r}"
+        )
 
     title = param_schema.get("title", param_name.replace("_", " ").capitalize())
     value = param_schema.get("default", DEFAULTS.get(type_))
@@ -38,6 +40,14 @@ def param_schema_to_widget(
     if type_ == "boolean":
         return pn.widgets.Checkbox(name=title, value=value)
 
+    if type_ == "integer":
+        return pn.widgets.IntSlider(
+            name=title,
+            start=param_schema.get("minimum", 0),
+            end=param_schema.get("maximum", 100),
+            value=value,
+            step=1,
+        )
     if type_ == "number":
         return pn.widgets.FloatSlider(
             name=title,

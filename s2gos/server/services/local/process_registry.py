@@ -48,6 +48,7 @@ class ProcessRegistry:
         version = kwargs.pop("version", "0.0.0")
         inputs = kwargs.pop("inputs", None) or {}
         outputs = kwargs.pop("outputs", None) or {}
+        description = kwargs.pop("description", function.__doc__)
 
         signature = inspect.signature(function)
         if not inputs:
@@ -66,7 +67,7 @@ class ProcessRegistry:
             Process(
                 id=id_,
                 version=version,
-                description=function.__doc__,
+                description=description,
                 inputs=inputs,
                 outputs=outputs,
                 **kwargs,
