@@ -47,10 +47,10 @@ class Client(GeneratedClient):
         if self._jobs_table is None:
             self._jobs_table = JobsTable(
                 self._get_jobs(),
-                on_cancel_jobs=self._cancel_jobs,
-                on_delete_jobs=self._delete_jobs,
-                on_restart_jobs=self._restart_jobs,
-                on_get_job_results=self._get_job_results,
+                on_cancel_job=self._cancel_job,
+                on_delete_job=self._delete_job,
+                on_restart_job=self._restart_job,
+                on_get_job_result=self._get_job_result,
             )
 
         if self._update_thread is None or not self._update_thread.is_alive():
@@ -64,22 +64,20 @@ class Client(GeneratedClient):
     def stop_updating(self):
         self._update_thread = None
 
-    def _cancel_jobs(self, job_ids: list[str]):
-        for job_id in job_ids:
-            self.dismiss(job_id)
+    def _cancel_job(self, job_id: str):
+        return self.dismiss(job_id)
 
-    def _delete_jobs(self, job_ids: list[str]):
-        for job_id in job_ids:
-            self.dismiss(job_id)
+    def _delete_job(self, job_id: str):
+        return self.dismiss(job_id)
 
     # noinspection PyMethodMayBeStatic
-    def _restart_jobs(self, _job_ids: list[str]):
+    def _restart_job(self, _job_id: str):
+        # TODO: implement job restart
         print("Not implemented.")
 
     # noinspection PyMethodMayBeStatic
-    def _get_job_results(self, _job_ids: list[str]):
-        print("Not implemented.")
-        return []
+    def _get_job_result(self, job_id: str):
+        return self.get_result(job_id)
 
     def __delete__(self, instance):
         self._update_thread = None

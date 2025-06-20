@@ -7,19 +7,25 @@ from typing import Any, Callable, TypeAlias
 import panel as pn
 import param
 
+from s2gos.client import ClientException
 from s2gos.client.gui.js2panel import param_schema_to_widget
-from s2gos.common.models import Execute, Process, ProcessList
+from s2gos.common.models import (
+    Execute,
+    Process,
+    ProcessList,
+    Output,
+    Format,
+    TransmissionMode,
+    StatusInfo,
+)
 
-SubmitRequestAction: TypeAlias = Callable[[str, Execute], Any]
+SubmitRequestAction: TypeAlias = Callable[[str, Execute], StatusInfo]
 GetProcessAction: TypeAlias = Callable[[str], Process]
 
 
 class Submitter(pn.viewable.Viewer):
     _processes = param.List(default=[], doc="List of process summaries")
     _process_descriptions = param.Dict(default={}, doc="Dictionary of cached processes")
-    _execute = param.Parameter(
-        default=Execute(), doc="Currently edited processing request"
-    )
 
     def __init__(
         self,
@@ -28,8 +34,8 @@ class Submitter(pn.viewable.Viewer):
         on_get_process_description: GetProcessAction,
     ):
         super().__init__()
-        self.on_submit_request = on_submit_request
-        self.on_get_process_description = on_get_process_description
+        self._on_submit_request = on_submit_request
+        self._on_get_process_description = on_get_process_description
 
         process_select_options = [p.id for p in process_list.processes]
         if process_select_options:
@@ -42,7 +48,9 @@ class Submitter(pn.viewable.Viewer):
             options=process_select_options,
             value=process_select_options[0] if process_select_options else None,
         )
-        self._process_select.param.watch(lambda e: self._update_process(e.new), "value")
+        self._process_select.param.watch(
+            lambda e: self._on_process_id_changed(e.new), "value"
+        )
 
         self._process_doc_markdown = pn.pane.Markdown("")
         process_panel = pn.Column(
@@ -81,37 +89,39 @@ class Submitter(pn.viewable.Viewer):
             self._save_as_button,
         )
 
-        self._input_params_panel = pn.Column()
-        self._output_params_panel = pn.Column()
-
-        inputs_panel = pn.Column(
-            pn.pane.Markdown("## Inputs"), self._input_params_panel
-        )
-        outputs_panel = pn.Column(
-            pn.pane.Markdown("## Outputs"), self._output_params_panel
-        )
+        self._inputs_panel = pn.Column(pn.pane.Markdown("## Inputs"))
+        self._outputs_panel = pn.Column(pn.pane.Markdown("## Outputs"))
 
         self._view = pn.Column(
             process_panel,
-            inputs_panel,
-            outputs_panel,
+            self._inputs_panel,
+            self._outputs_panel,
             action_panel,
         )
 
+        self._input_widgets = {}
+        self._output_widgets = {}
         self._processes = process_list.processes
-        self._update_process(process_id)
+        self._on_process_id_changed(process_id)
 
-    def _update_process(self, process_id: str | None = None):
+    def _on_process_id_changed(self, process_id: str | None = None):
         if not process_id:
             self._process_doc_markdown.object = "_No process selected._"
-            self._input_params_panel[:] = []
-            self._output_params_panel[:] = []
+            self._input_widgets = {}
+            self._output_widgets = {}
+            self._inputs_panel[1:] = []
+            self._outputs_panel[1:] = []
             return
 
         if process_id in self._process_descriptions:
             process_description = self._process_descriptions[process_id]
         else:
-            process_description = self.on_get_process_description(process_id)
+            try:
+                process_description = self._on_get_process_description(process_id)
+            except ClientException as e:
+                # TODO: Show error in GUI
+                print(f"error: {e}")
+                return
             self._process_descriptions[process_id] = process_description
 
         # print(process_description)
@@ -119,8 +129,8 @@ class Submitter(pn.viewable.Viewer):
             f"**{process_description.title}**\n\n{process_description.description}"
         )
 
-        input_widgets = [
-            param_schema_to_widget(
+        self._input_widgets = {
+            param_name: param_schema_to_widget(
                 param_name,
                 input_description.schema_.model_dump(
                     mode="json", exclude_defaults=True
@@ -130,10 +140,10 @@ class Submitter(pn.viewable.Viewer):
             for param_name, input_description in (
                 process_description.inputs or {}
             ).items()
-        ]
+        }
 
-        output_widgets = [
-            param_schema_to_widget(
+        self._output_widgets = {
+            param_name: param_schema_to_widget(
                 param_name,
                 output_description.schema_.model_dump(
                     mode="json", exclude_defaults=True
@@ -143,24 +153,54 @@ class Submitter(pn.viewable.Viewer):
             for param_name, output_description in (
                 process_description.outputs or {}
             ).items()
-        ]
+        }
 
-        self._input_params_panel[:] = input_widgets
-        self._output_params_panel[:] = output_widgets
+        self._inputs_panel[1:] = self._input_widgets.values()
+        self._outputs_panel[1:] = self._output_widgets.values()
 
     def _on_submit_request_button_clicked(self, _event: Any = None):
-        pass
+        process_id = self._process_select.value
+        process_description = self._process_descriptions.get(process_id)
+        if process_description is None:
+            return
+        request = Execute(
+            inputs={k: v.value for k, v in self._input_widgets.items()},
+            outputs={
+                k: Output(
+                    format=Format(
+                        mediaType="application/json",
+                        encoding="UTF-8",
+                        schema=process_description.outputs[k].schema_,
+                    ),
+                    transmissionMode=TransmissionMode.value,
+                )
+                for k, v in self._output_widgets.items()
+            },
+        )
+        try:
+            self._submit_button.disabled = True
+            _status_info = self._on_submit_request(process_id, request)
+            # TODO: Show status info in GUI
+        except ClientException as e:
+            # TODO: Show error in GUI
+            print(f"error: {e}")
+        finally:
+            self._submit_button.disabled = False
 
     def _on_open_request_clicked(self, _event: Any = None):
+        # TODO implement open request
         pass
 
     def _on_save_request_clicked(self, _event: Any = None):
+        # TODO implement save request
         pass
 
     def _on_save_as_request_clicked(self, _event: Any = None):
+        # TODO implement save request as
         pass
 
     def _update_buttons(self):
+        # TODO implement action enablement
         pass
 
     def __panel__(self) -> pn.viewable.Viewable:
