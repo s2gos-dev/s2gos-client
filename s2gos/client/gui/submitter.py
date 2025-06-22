@@ -13,14 +13,14 @@ from s2gos.common.models import (
     Format,
     JobInfo,
     Output,
-    Process,
+    ProcessDescription,
     ProcessList,
     ProcessRequest,
     TransmissionMode,
 )
 
 SubmitRequestAction: TypeAlias = Callable[[str, ProcessRequest], JobInfo]
-GetProcessAction: TypeAlias = Callable[[str], Process]
+GetProcessAction: TypeAlias = Callable[[str], ProcessDescription]
 
 
 class Submitter(pn.viewable.Viewer):
@@ -112,7 +112,7 @@ class Submitter(pn.viewable.Viewer):
         return self._view
 
     def _on_process_id_changed(self, process_id: str | None = None):
-        process_description: Process | None = None
+        process_description: ProcessDescription | None = None
         process_markdown: str | None = None
         if not process_id:
             process_markdown = "_No process selected._"

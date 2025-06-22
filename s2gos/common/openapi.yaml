@@ -362,7 +362,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/results'
+                $ref: '#/components/schemas/processResults'
         "404":
           description: The requested URI was not found.
           content:
@@ -489,7 +489,7 @@ components:
           - document
         subscriber:
           $ref: '#/components/schemas/subscriber'
-    results:
+    processResults:
       type: object
       additionalProperties:
         $ref: '#/components/schemas/inlineOrRefData'
@@ -931,4 +931,4 @@ components:
       - type: boolean
       - type: string
         format: binary
-      - $ref: '#/components/schemas/results'
+      - $ref: '#/components/schemas/processResults'

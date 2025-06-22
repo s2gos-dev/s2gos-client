@@ -13,7 +13,7 @@ from s2gos.common.models import (
     InlineOrRefData,
     JobInfo,
     JobList,
-    Results,
+    ProcessResults,
     StatusCode,
 )
 
@@ -161,11 +161,11 @@ class JobsTable(pn.viewable.Viewer):
         )
 
     def _on_get_job_result_clicked(self, _event: Any):
-        def handle_result(_job_id: str, results: Results | dict):
+        def handle_result(_job_id: str, results: ProcessResults | dict):
             # noinspection PyProtectedMember
             from IPython import get_ipython
 
-            if isinstance(results, Results):
+            if isinstance(results, ProcessResults):
                 results = results.root
             if isinstance(results, dict):
                 results = {

@@ -14,7 +14,7 @@ from s2gos.common.models import (
     ProcessDescription,
     ProcessList,
     ProcessRequest,
-    Results,
+    ProcessResults,
 )
 from tests.client.helpers import MockTransport
 
@@ -73,4 +73,4 @@ class ClientTest(TestCase):
 
     def test_get_result(self):
         result = self.client.get_result("job_12")
-        self.assertIsInstance(result, Results)
+        self.assertIsInstance(result, ProcessResults)
