@@ -184,7 +184,7 @@ paths:
           content:
             /*:
               schema:
-                $ref: '#/components/schemas/inline_response_200'
+                $ref: '#/components/schemas/inlineValue'
         "201":
           description: Started asynchronous execution. Created job.
           headers:
@@ -264,7 +264,7 @@ paths:
       description: |
         Shows the status of a job.
 
-         For more information, see [Section 7.12](https://docs.ogc.org/is/18-062/18-062.html#sc_retrieve_status_info).
+        For more information, see [Section 7.12](https://docs.ogc.org/is/18-062/18-062.html#sc_retrieve_status_info).
       operationId: getStatus
       parameters:
       - name: jobId
@@ -473,10 +473,10 @@ components:
           type: object
           additionalProperties:
             oneOf:
-            - $ref: '#/components/schemas/inlineOrRefData'
+            - $ref: '#/components/schemas/inlineOrRefValue'
             - type: array
               items:
-                $ref: '#/components/schemas/inlineOrRefData'
+                $ref: '#/components/schemas/inlineOrRefValue'
         outputs:
           type: object
           additionalProperties:
@@ -492,7 +492,7 @@ components:
     processResults:
       type: object
       additionalProperties:
-        $ref: '#/components/schemas/inlineOrRefData'
+        $ref: '#/components/schemas/inlineOrRefValue'
     jobInfo:
       required:
       - jobID
@@ -611,15 +611,10 @@ components:
             oneOf:
             - $ref: '#/components/schemas/schema'
             - $ref: '#/components/schemas/reference'
-    inlineOrRefData:
+    inlineOrRefValue:
       oneOf:
-      - type: string
-      - type: number
-      - type: integer
-      - type: boolean
-      - type: array
-      - $ref: '#/components/schemas/bbox'
-      - $ref: '#/components/schemas/qualifiedInputValue'
+      - $ref: '#/components/schemas/inlineValue'
+      - $ref: '#/components/schemas/qualifiedValue'
       - $ref: '#/components/schemas/link'
     output:
       type: object
@@ -836,7 +831,7 @@ components:
         contentSchema:
           type: string
       additionalProperties: false
-    qualifiedInputValue:
+    qualifiedValue:
       allOf:
       - $ref: '#/components/schemas/format'
       - required:
@@ -918,17 +913,15 @@ components:
           enum:
           - http://www.opengis.net/def/crs/OGC/1.3/CRS84
           - http://www.opengis.net/def/crs/OGC/0/CRS84h
-    inline_response_200:
+    inlineValue:
       oneOf:
-      - type: string
-      - type: number
-      - type: integer
-      - type: object
-        nullable: true
-      - type: array
-        items:
-          type: object
       - type: boolean
       - type: string
         format: binary
-      - $ref: '#/components/schemas/processResults'
+      - type: string
+      - type: integer
+      - type: number
+      - type: array
+      - type: object
+        nullable: true
+      - $ref: '#/components/schemas/bbox'

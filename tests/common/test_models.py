@@ -32,7 +32,6 @@ REQUIRED_MODELS = {
     "ProcessList",
     "ProcessRequest",
     "ProcessSummary",
-    "QualifiedInputValue",
     "Reference",
     "Schema",
 }

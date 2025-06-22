@@ -7,7 +7,7 @@ from unittest import TestCase
 from s2gos.client import Client
 from s2gos.common.models import (
     ConfClasses,
-    InlineOrRefData,
+    InlineOrRefValue,
     JobInfo,
     JobList,
     LandingPage,
@@ -54,7 +54,8 @@ class ClientTest(TestCase):
         result = self.client.execute(
             process_id="gobabeb_1",
             request=ProcessRequest(
-                inputs={"bbox": InlineOrRefData(root=[10, 20, 30, 40])}, outputs={}
+                inputs={"bbox": [10, 20, 30, 40]},
+                outputs={},
             ),
         )
         self.assertIsInstance(result, JobInfo)

@@ -10,7 +10,7 @@ import param
 
 from s2gos.client import ClientException
 from s2gos.common.models import (
-    InlineOrRefData,
+    InlineOrRefValue,
     JobInfo,
     JobList,
     ProcessResults,
@@ -169,7 +169,7 @@ class JobsTable(pn.viewable.Viewer):
                 results = results.root
             if isinstance(results, dict):
                 results = {
-                    k: (v.root if isinstance(v, InlineOrRefData) else v)
+                    k: (v.root if isinstance(v, InlineOrRefValue) else v)
                     for k, v in results.items()
                 }
             var_name = "_results"

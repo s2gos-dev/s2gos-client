@@ -16,8 +16,8 @@ from s2gos.common.models import (
     ProcessDescription,
     ProcessList,
     ProcessRequest,
-    ProcessSummary,
     ProcessResults,
+    ProcessSummary,
     StatusCode,
 )
 from s2gos.server.exceptions import JSONContentException
@@ -151,7 +151,7 @@ class LocalService(Service):
         entry = self.process_registry.get_entry(job.status_info.processID)
         outputs = entry.process.outputs or {}
         output_count = len(outputs)
-        return Results.model_validate(
+        return ProcessResults.model_validate(
             {
                 output_name: result if output_count == 1 else result[i]
                 for i, output_name in enumerate(outputs.keys())

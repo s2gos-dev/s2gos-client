@@ -6,6 +6,7 @@
 from s2gos.common.models import (
     ProcessRequest,
 )
+
 from .app import app
 from .provider import ServiceProvider
 
