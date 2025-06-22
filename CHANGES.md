@@ -4,6 +4,9 @@
 
 ## Changes in version 0.0.5 (in development)
 
+- Renamed models in `s2gos.common.models`:
+  - `Exception` --> `ApiError`
+
 
 ## Changes in version 0.0.4 (not released)
 

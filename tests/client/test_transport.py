@@ -9,7 +9,7 @@ import pytest
 
 from s2gos.client.exceptions import ClientException
 from s2gos.client.transport import DefaultTransport
-from s2gos.common.models import ConfClasses, Exception
+from s2gos.common.models import ApiError, ConfClasses
 
 
 class DefaultTransportTest(TestCase):
@@ -30,7 +30,7 @@ class DefaultTransportTest(TestCase):
                 query_params={},
                 request=None,
                 return_types={"200": ConfClasses},
-                error_types={"401": Exception},
+                error_types={"401": ApiError},
             )
             mock_request.assert_called_once_with(
                 "GET",
@@ -58,7 +58,7 @@ class DefaultTransportTest(TestCase):
                 query_params={},
                 request=None,
                 return_types={"201": ConfClasses},
-                error_types={"401": Exception},
+                error_types={"401": ApiError},
             )
             mock_request.assert_called_once_with(
                 "GET",
@@ -86,7 +86,7 @@ class DefaultTransportTest(TestCase):
                 query_params={},
                 request=None,
                 return_types={},
-                error_types={"401": Exception},
+                error_types={"401": ApiError},
             )
             mock_request.assert_called_once_with(
                 "GET",
@@ -117,5 +117,5 @@ class DefaultTransportTest(TestCase):
                     query_params={},
                     request=None,
                     return_types={"200": ConfClasses},
-                    error_types={"401": Exception},
+                    error_types={"401": ApiError},
                 )

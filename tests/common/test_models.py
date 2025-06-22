@@ -17,8 +17,8 @@ REQUIRED_ENUMS = {
 }
 
 REQUIRED_MODELS = {
+    "ApiError",
     "ConfClasses",
-    "Exception",
     "Execute",
     "Format",
     "InputDescription",

@@ -4,10 +4,10 @@
 
 from fastapi import HTTPException
 
-from s2gos.common.models import Exception
+from s2gos.common.models import ApiError
 
 
 class JSONContentException(HTTPException):
     def __init__(self, status_code: int, detail: str):
         super().__init__(status_code=status_code, detail=detail)
-        self.content = Exception(type="error", status=status_code, detail=detail)
+        self.content = ApiError(type="error", status=status_code, detail=detail)
