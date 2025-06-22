@@ -2,6 +2,13 @@
 
 * Added basic request submit form to client GUI.
 
+## Changes in version 0.0.5 (in development)
+
+
+## Changes in version 0.0.4 (not released)
+
+* Added basic submit form to GUI client: `s2gos.client.gui.Client.show_submitter()`
+
 ## Changes in version 0.0.3 (not released)
 
 * Server now has a new option `--service` to specify the service implementation.
