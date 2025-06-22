@@ -4,6 +4,7 @@
 
 import datetime
 import inspect
+import traceback
 import warnings
 from abc import ABC, abstractmethod
 from concurrent.futures import Future
@@ -140,8 +141,10 @@ class Job(JobContext):
         self.status_info.finished = datetime.datetime.now()
         self.status_info.status = status_code
         if exception is not None:
-            # TODO: save exception traceback
             self.status_info.message = f"{exception}"
+            self.status_info.traceback = traceback.format_exception(
+                type(exception), exception, exception.__traceback__
+            )
 
 
 def get_job_context() -> JobContext:

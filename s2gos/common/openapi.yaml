@@ -532,6 +532,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/link'
+        # Extension of OGC API / Processes core v1
+        traceback:
+          type: array
+          items:
+            type: string
     link:
       required:
       - href
