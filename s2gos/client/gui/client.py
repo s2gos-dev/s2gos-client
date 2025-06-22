@@ -41,7 +41,7 @@ class Client(GeneratedClient):
         return self.get_process_description(process_id)
 
     def _submit_request(self, process_id: str, request: ProcessRequest) -> JobInfo:
-        return self.ProcessRequest(process_id, request)
+        return self.execute(process_id, request)
 
     def show_jobs(self):
         if self._jobs_table is None:
