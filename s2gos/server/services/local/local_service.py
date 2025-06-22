@@ -13,7 +13,7 @@ from s2gos.common.models import (
     JobInfo,
     JobList,
     LandingPage,
-    Process,
+    ProcessDescription,
     ProcessList,
     ProcessRequest,
     ProcessSummary,
@@ -77,7 +77,7 @@ class LocalService(Service):
             links=[],
         )
 
-    async def get_process_description(self, process_id: str) -> Process:
+    async def get_process_description(self, process_id: str) -> ProcessDescription:
         process_entry = self._get_process_entry(process_id)
         return process_entry.process
 

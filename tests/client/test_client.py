@@ -11,7 +11,7 @@ from s2gos.common.models import (
     JobInfo,
     JobList,
     LandingPage,
-    Process,
+    ProcessDescription,
     ProcessList,
     ProcessRequest,
     Results,
@@ -48,7 +48,7 @@ class ClientTest(TestCase):
 
     def test_get_process_description(self):
         result = self.client.get_process_description(process_id="gobabeb_1")
-        self.assertIsInstance(result, Process)
+        self.assertIsInstance(result, ProcessDescription)
 
     def test_execute(self):
         result = self.client.execute(

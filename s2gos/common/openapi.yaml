@@ -141,7 +141,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/process'
+                $ref: '#/components/schemas/processDescription'
               examples:
                 processDescription:
                   summary: A Process Description example
@@ -439,7 +439,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/link'
-    process:
+    processDescription:
       allOf:
       - $ref: '#/components/schemas/processSummary'
       - type: object
@@ -932,108 +932,3 @@ components:
       - type: string
         format: binary
       - $ref: '#/components/schemas/results'
-  responses:
-    LandingPage:
-      description: |-
-        The landing page provides links to the API definition
-        (link relations `service-desc` and `service-doc`),
-        the Conformance declaration (path `/conformance`,
-        link relation `http://www.opengis.net/def/rel/ogc/1.0/conformance`), and to other resources.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/landingPage'
-        text/html:
-          schema:
-            type: string
-    ServerError:
-      description: A server error occurred.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/apiError'
-        text/html:
-          schema:
-            type: string
-    ConformanceDeclaration:
-      description: |-
-        The URIs of all conformance classes supported by the server.
-
-        To support "generic" clients that want to access multiple
-        OGC API - Processes implementations - and not "just" a specific
-        API / server, the server declares the conformance
-        classes it implements and conforms to.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/confClasses'
-          example:
-            conformsTo:
-            - http://www.opengis.net/spec/ogcapi-processes/1.0/conf/core
-        text/html:
-          schema:
-            type: string
-    ProcessList:
-      description: Information about the available processes
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/processList'
-    ProcessDescription:
-      description: A process description.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/process'
-          examples:
-            processDecription:
-              summary: A Process Description example
-              externalValue: ../../examples/json/ProcessDescription.json
-    NotFound:
-      description: The requested URI was not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/apiError'
-        text/html:
-          schema:
-            type: string
-    JobList:
-      description: A list of jobs for this process.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/jobList'
-    ExecuteSync:
-      description: Result of synchronous execution
-      content:
-        /*:
-          schema:
-            $ref: '#/components/schemas/inline_response_200'
-    ExecuteAsync:
-      description: Started asynchronous execution. Created job.
-      headers:
-        Location:
-          description: URL to check the status of the execution/job.
-          schema:
-            type: string
-        Preference-Applied:
-          description: The preference applied to execute the process asynchronously (see. RFC 2740).
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/jobInfo'
-    Status:
-      description: The status of a job.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/jobInfo'
-    Results:
-      description: The results of a job.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/results'

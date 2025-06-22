@@ -8,6 +8,7 @@
   - renamed `exception` schema component into `apiError`
   - renamed `statusInfo` schema component into `jobInfo`
   - renamed `execute` schema component into `processRequest`
+  - renamed `process` schema component into `processDescription`
   - extended `StatusInfo` by `traceback`
   - regenerated code
   - adjusted non-generated code accordingly

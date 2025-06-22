@@ -12,7 +12,12 @@ from typing import (
     get_origin,
 )
 
-from s2gos.common.models import InputDescription, OutputDescription, Process, Schema
+from s2gos.common.models import (
+    InputDescription,
+    OutputDescription,
+    ProcessDescription,
+    Schema,
+)
 from s2gos.server.services.local.schema_factory import Annotation, SchemaFactory
 
 
@@ -21,15 +26,15 @@ class ProcessRegistry:
     class Entry:
         function: Callable
         signature: inspect.Signature
-        process: Process
+        process: ProcessDescription
 
     def __init__(self):
         self._dict: dict[str, ProcessRegistry.Entry] = {}
 
-    def get_process_list(self) -> list[Process]:
+    def get_process_list(self) -> list[ProcessDescription]:
         return [v.process for v in self._dict.values()]
 
-    def get_process(self, process_id: str) -> Optional[Process]:
+    def get_process(self, process_id: str) -> Optional[ProcessDescription]:
         entry = self._dict.get(process_id)
         return entry.process if entry is not None else None
 
@@ -64,7 +69,7 @@ class ProcessRegistry:
         entry = ProcessRegistry.Entry(
             function,
             signature,
-            Process(
+            ProcessDescription(
                 id=id_,
                 version=version,
                 description=description,

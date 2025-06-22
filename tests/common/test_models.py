@@ -28,7 +28,7 @@ REQUIRED_MODELS = {
     "Metadata",
     "Output",
     "OutputDescription",
-    "Process",
+    "ProcessDescription",
     "ProcessList",
     "ProcessRequest",
     "ProcessSummary",
