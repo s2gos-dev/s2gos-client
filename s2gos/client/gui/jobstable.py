@@ -12,7 +12,7 @@ from s2gos.client import ClientException
 from s2gos.common.models import (
     JobList,
     StatusCode,
-    StatusInfo,
+    JobInfo,
     Results,
     InlineOrRefData,
 )
@@ -127,11 +127,11 @@ class JobsTable(pn.viewable.Viewer):
         )
 
     @classmethod
-    def is_disabled(cls, jobs: list[StatusInfo], requirements: set[StatusCode]):
+    def is_disabled(cls, jobs: list[JobInfo], requirements: set[StatusCode]):
         return not jobs or not all(j.status in requirements for j in jobs)
 
     @property
-    def selected_jobs(self) -> list[StatusInfo]:
+    def selected_jobs(self) -> list[JobInfo]:
         """Get selected jobs from jobs table."""
         selection = self._tabulator.selection
         if not selection:
@@ -257,11 +257,11 @@ class JobsTable(pn.viewable.Viewer):
         return tabulator
 
     @classmethod
-    def _jobs_to_dataframe(cls, jobs: list[StatusInfo]):
+    def _jobs_to_dataframe(cls, jobs: list[JobInfo]):
         return pd.DataFrame([cls._job_to_dataframe_row(job) for job in jobs])
 
     @classmethod
-    def _job_to_dataframe_row(cls, job: StatusInfo):
+    def _job_to_dataframe_row(cls, job: JobInfo):
         return {
             "process_id": job.processID,
             "job_id": job.jobID,

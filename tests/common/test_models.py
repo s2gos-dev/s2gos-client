@@ -22,6 +22,7 @@ REQUIRED_MODELS = {
     "Execute",
     "Format",
     "InputDescription",
+    "JobInfo",
     "JobList",
     "LandingPage",
     "Link",
@@ -34,7 +35,6 @@ REQUIRED_MODELS = {
     "QualifiedInputValue",
     "Reference",
     "Schema",
-    "StatusInfo",
 }
 
 

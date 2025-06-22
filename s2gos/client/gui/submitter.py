@@ -16,10 +16,10 @@ from s2gos.common.models import (
     Output,
     Format,
     TransmissionMode,
-    StatusInfo,
+    JobInfo,
 )
 
-SubmitRequestAction: TypeAlias = Callable[[str, Execute], StatusInfo]
+SubmitRequestAction: TypeAlias = Callable[[str, Execute], JobInfo]
 GetProcessAction: TypeAlias = Callable[[str], Process]
 
 

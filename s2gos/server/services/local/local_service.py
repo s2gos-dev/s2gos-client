@@ -18,7 +18,7 @@ from s2gos.common.models import (
     ProcessSummary,
     Results,
     StatusCode,
-    StatusInfo,
+    JobInfo,
 )
 from s2gos.server.exceptions import JSONContentException
 from s2gos.server.service import Service
@@ -121,11 +121,11 @@ class LocalService(Service):
     async def get_jobs(self) -> JobList:
         return JobList(jobs=[job.status_info for job in self.jobs.values()], links=[])
 
-    async def get_status(self, job_id: str) -> StatusInfo:
+    async def get_status(self, job_id: str) -> JobInfo:
         job = self._get_job(job_id, forbidden_status_codes={})
         return job.status_info
 
-    async def dismiss(self, job_id: str) -> StatusInfo:
+    async def dismiss(self, job_id: str) -> JobInfo:
         job = self._get_job(job_id, forbidden_status_codes={})
         if job.status_info.status in (StatusCode.accepted, StatusCode.running):
             job.cancel()

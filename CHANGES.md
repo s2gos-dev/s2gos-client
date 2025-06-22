@@ -6,10 +6,12 @@
 
 - Changed `s2gos/common/openapi.yaml`
   - renamed `exception` component into `apiError`
+  - renamed `statusInfo` component into `jobInfo`
   - extended `StatusInfo` by `traceback`
 
 - Renamed models in `s2gos.common.models`:
   - `Exception` --> `ApiError`
+  - `StatusInfo` --> `JobInfo`
 
 
 ## Changes in version 0.0.4 (not released)

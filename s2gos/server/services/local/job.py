@@ -12,7 +12,7 @@ from typing import Any, Callable, Optional
 
 from s2gos.common.models import (
     StatusCode,
-    StatusInfo,
+    JobInfo,
     Type,
 )
 
@@ -75,7 +75,7 @@ class Job(JobContext):
         function: Callable[..., Any],
         function_kwargs: dict[str, Any],
     ):
-        self.status_info = StatusInfo(
+        self.status_info = JobInfo(
             type=Type.process,
             processID=process_id,
             jobID=job_id,

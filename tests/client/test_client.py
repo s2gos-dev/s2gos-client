@@ -14,7 +14,7 @@ from s2gos.common.models import (
     Process,
     ProcessList,
     Results,
-    StatusInfo,
+    JobInfo,
 )
 from tests.client.helpers import MockTransport
 
@@ -57,7 +57,7 @@ class ClientTest(TestCase):
                 inputs={"bbox": InlineOrRefData(root=[10, 20, 30, 40])}, outputs={}
             ),
         )
-        self.assertIsInstance(result, StatusInfo)
+        self.assertIsInstance(result, JobInfo)
 
     def test_get_jobs(self):
         result = self.client.get_jobs()
@@ -65,11 +65,11 @@ class ClientTest(TestCase):
 
     def test_dismiss(self):
         result = self.client.dismiss("job_12")
-        self.assertIsInstance(result, StatusInfo)
+        self.assertIsInstance(result, JobInfo)
 
     def test_get_status(self):
         result = self.client.get_status("job_12")
-        self.assertIsInstance(result, StatusInfo)
+        self.assertIsInstance(result, JobInfo)
 
     def test_get_result(self):
         result = self.client.get_result("job_12")

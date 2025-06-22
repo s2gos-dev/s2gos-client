@@ -199,7 +199,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/statusInfo'
+                $ref: '#/components/schemas/jobInfo'
         "404":
           description: The requested URI was not found.
           content:
@@ -279,7 +279,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/statusInfo'
+                $ref: '#/components/schemas/jobInfo'
         "404":
           description: The requested URI was not found.
           content:
@@ -316,11 +316,11 @@ paths:
           type: string
       responses:
         "200":
-          description: The status of a job.
+          description: Information about the job.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/statusInfo'
+                $ref: '#/components/schemas/jobInfo'
         "404":
           description: The requested URI was not found.
           content:
@@ -461,7 +461,7 @@ components:
         jobs:
           type: array
           items:
-            $ref: '#/components/schemas/statusInfo'
+            $ref: '#/components/schemas/jobInfo'
         links:
           type: array
           items:
@@ -493,7 +493,7 @@ components:
       type: object
       additionalProperties:
         $ref: '#/components/schemas/inlineOrRefData'
-    statusInfo:
+    jobInfo:
       required:
       - jobID
       - status
@@ -1024,13 +1024,13 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/statusInfo'
+            $ref: '#/components/schemas/jobInfo'
     Status:
       description: The status of a job.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/statusInfo'
+            $ref: '#/components/schemas/jobInfo'
     Results:
       description: The results of a job.
       content:
