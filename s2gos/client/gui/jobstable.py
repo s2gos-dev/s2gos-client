@@ -7,11 +7,17 @@ from typing import Any, Callable, Optional, TypeAlias
 import pandas as pd
 import panel as pn
 import param
-from IPython.display import display
 
-from s2gos.common.models import JobList, StatusCode, StatusInfo
+from s2gos.client import ClientException
+from s2gos.common.models import (
+    JobList,
+    StatusCode,
+    StatusInfo,
+    Results,
+    InlineOrRefData,
+)
 
-SelectedJobsAction: TypeAlias = Callable[[list[str]], Any]
+JobAction: TypeAlias = Callable[[str], Any]
 
 
 class JobsTable(pn.viewable.Viewer):
@@ -20,16 +26,19 @@ class JobsTable(pn.viewable.Viewer):
     def __init__(
         self,
         job_list: JobList,
-        on_delete_jobs: Optional[SelectedJobsAction] = None,
-        on_cancel_jobs: Optional[SelectedJobsAction] = None,
-        on_restart_jobs: Optional[SelectedJobsAction] = None,
-        on_get_job_results: Optional[SelectedJobsAction] = None,
+        job_list_error: ClientException | None,
+        on_delete_job: Optional[JobAction] = None,
+        on_cancel_job: Optional[JobAction] = None,
+        on_restart_job: Optional[JobAction] = None,
+        on_get_job_result: Optional[JobAction] = None,
     ):
         super().__init__()
-        self._on_delete_jobs = on_delete_jobs
-        self._on_cancel_jobs = on_cancel_jobs
-        self._on_restart_jobs = on_restart_jobs
-        self._on_get_job_results = on_get_job_results
+        # TODO: Report job_list_error if not None
+        self._job_list_error = job_list_error
+        self._on_delete_job = on_delete_job
+        self._on_cancel_job = on_cancel_job
+        self._on_restart_job = on_restart_job
+        self._on_get_job_result = on_get_job_result
         self._tabulator = self._new_tabulator(job_list)
         self._tabulator.param.watch(self._update_buttons, "selection")
         # A placeholder for clicked action
@@ -37,49 +46,53 @@ class JobsTable(pn.viewable.Viewer):
             name="Cancel",
             # tooltip="Cancels the selected job(s)",
             button_type="primary",
-            on_click=self.cancel_selected_jobs,
+            on_click=self._on_cancel_jobs_clicked,
             disabled=True,
         )
         self._delete_button = pn.widgets.Button(
             name="Delete",
             # tooltip="Deletes the selected job(s)",
             button_type="danger",
-            on_click=self.delete_selected_jobs,
+            on_click=self._on_delete_jobs_clicked,
             disabled=True,
         )
         self._restart_button = pn.widgets.Button(
             name="Restart",
             # tooltip="Restarts the selected job(s)",
             button_type="primary",
-            on_click=self.restart_selected_jobs,
+            on_click=self._on_restart_jobs_clicked,
             disabled=True,
         )
-        self._results_button = pn.widgets.Button(
+        self._get_result_button = pn.widgets.Button(
             name="Get Result",
             # tooltip="Gets the results from the selected job(s)",
             button_type="primary",
-            on_click=self.get_selected_job_results,
+            on_click=self._on_get_job_result_clicked,
             disabled=True,
         )
         self._action_row = pn.Row(
             self._cancel_button,
             self._delete_button,
             self._restart_button,
-            self._results_button,
+            self._get_result_button,
         )
-        self._selected_text = pn.widgets.StaticText(name="Selection:", value="None")
+        self._message_md = pn.pane.Markdown("")
         self._view = pn.Column(
             self._action_row,
             self._tabulator,
-            self._selected_text,
+            self._message_md,
         )
 
         # Reaction to changes in jobs list
         self.param.watch(self._on_jobs_changed, "_jobs")
-        self._jobs = job_list.jobs
+        self.set_job_list(job_list, job_list_error)
 
-    def set_job_list(self, job_list: JobList):
+    def __panel__(self) -> pn.viewable.Viewable:
+        return self._view
+
+    def set_job_list(self, job_list: JobList, job_list_error: ClientException | None):
         self._jobs = job_list.jobs
+        self._job_list_error = job_list_error
 
     def _on_jobs_changed(self, _event: Any = None):
         """Will be called automatically, if self.jobs changes."""
@@ -90,24 +103,24 @@ class JobsTable(pn.viewable.Viewer):
         """Will be called if selection changes."""
 
         selected_jobs = self.selected_jobs
-        self._selected_text.value = ", ".join([j.jobID for j in selected_jobs])
 
-        self._cancel_button.disabled = self._on_cancel_jobs is None or self.is_disabled(
+        self._cancel_button.disabled = self._on_cancel_job is None or self.is_disabled(
             selected_jobs, {StatusCode.accepted, StatusCode.running}
         )
-        self._delete_button.disabled = self._on_delete_jobs is None or self.is_disabled(
+        self._delete_button.disabled = self._on_delete_job is None or self.is_disabled(
             selected_jobs,
             {StatusCode.successful, StatusCode.dismissed, StatusCode.failed},
         )
         self._restart_button.disabled = (
-            self._on_restart_jobs is None
+            self._on_restart_job is None
             or self.is_disabled(
                 selected_jobs,
                 {StatusCode.successful, StatusCode.dismissed, StatusCode.failed},
             )
         )
-        self._results_button.disabled = (
-            self._on_get_job_results is None
+        self._get_result_button.disabled = (
+            self._on_get_job_result is None
+            or len(selected_jobs) != 1
             or self.is_disabled(
                 selected_jobs, {StatusCode.successful, StatusCode.failed}
             )
@@ -126,21 +139,73 @@ class JobsTable(pn.viewable.Viewer):
         selected_ids = {self._jobs[row].jobID for row in selection}
         return [job for job in self._jobs if job.jobID in selected_ids]
 
-    def cancel_selected_jobs(self, event: Any):
-        self._on_cancel_jobs([j.jobID for j in self.selected_jobs])
+    def _on_cancel_jobs_clicked(self, _event: Any):
+        self._run_action_on_selected_jobs(
+            self._on_cancel_job,
+            "✅ Cancelled {job}",
+            "⚠️ Failed cancelling {job}: {message}",
+        )
 
-    def delete_selected_jobs(self, event: Any):
-        self._on_delete_jobs([j.jobID for j in self.selected_jobs])
+    def _on_delete_jobs_clicked(self, _event: Any):
+        self._run_action_on_selected_jobs(
+            self._on_delete_job,
+            "✅ Deleted {job}",
+            "⚠️ Failed deleting {job}: {message}",
+        )
 
-    def restart_selected_jobs(self, event: Any):
-        self._on_restart_jobs([j.jobID for j in self.selected_jobs])
+    def _on_restart_jobs_clicked(self, _event: Any):
+        self._run_action_on_selected_jobs(
+            self._on_restart_job,
+            "✅ Restarted {job}",
+            "⚠️ Failed restarting {job}: {message}",
+        )
 
-    def get_selected_job_results(self, event: Any):
-        for r in self._on_get_job_results([j.jobID for j in self.selected_jobs]):
-            display(r)
+    def _on_get_job_result_clicked(self, _event: Any):
+        def handle_result(_job_id: str, results: Results | dict):
+            # noinspection PyProtectedMember
+            from IPython import get_ipython
 
-    def __panel__(self) -> pn.viewable.Viewable:
-        return self._view
+            if isinstance(results, Results):
+                results = results.root
+            if isinstance(results, dict):
+                results = {
+                    k: (v.root if isinstance(v, InlineOrRefData) else v)
+                    for k, v in results.items()
+                }
+            var_name = "_results"
+            get_ipython().user_ns[var_name] = results
+            return "✅ Stored result(s) of {job} " + f"in variable **`{var_name}`**"
+
+        self._run_action_on_selected_jobs(
+            self._on_get_job_result,
+            handle_result,
+            "⚠️ Failed to get result for {job}: {message}",
+        )
+
+    def _run_action_on_selected_jobs(
+        self,
+        action: JobAction,
+        success_format: str | Callable[[str, Any], str] | None,
+        error_format: str,
+    ):
+        messages = []
+        for job in self.selected_jobs:
+            job_id = job.jobID
+            job_text = f"job `{job_id}`"
+            try:
+                result = action(job_id)
+                if isinstance(success_format, str):
+                    messages.append(success_format.format(job=job_text))
+                elif callable(success_format):
+                    messages.append(success_format(job_id, result).format(job=job_text))
+            except ClientException as e:
+                messages.append(
+                    error_format.format(
+                        job=job_text,
+                        message=f"{e.title} (status `{e.status_code}`): {e.detail}",
+                    )
+                )
+        self._message_md.object = " \n".join(messages)
 
     @classmethod
     def _new_tabulator(cls, job_list: JobList) -> pn.widgets.Tabulator:
