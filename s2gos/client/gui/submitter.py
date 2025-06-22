@@ -30,10 +30,14 @@ class Submitter(pn.viewable.Viewer):
     def __init__(
         self,
         process_list: ProcessList,
+        process_list_error: ClientException | None,
         on_submit_request: SubmitRequestAction,
         on_get_process_description: GetProcessAction,
     ):
         super().__init__()
+        self._processes = process_list.processes
+        self._process_list_error = process_list_error
+
         self._on_submit_request = on_submit_request
         self._on_get_process_description = on_get_process_description
 
@@ -89,8 +93,8 @@ class Submitter(pn.viewable.Viewer):
             self._save_as_button,
         )
 
-        self._inputs_panel = pn.Column(pn.pane.Markdown("## Inputs"))
-        self._outputs_panel = pn.Column(pn.pane.Markdown("## Outputs"))
+        self._inputs_panel = pn.Column()
+        self._outputs_panel = pn.Column()
 
         self._view = pn.Column(
             process_panel,
@@ -101,62 +105,58 @@ class Submitter(pn.viewable.Viewer):
 
         self._input_widgets = {}
         self._output_widgets = {}
-        self._processes = process_list.processes
+
         self._on_process_id_changed(process_id)
 
+    def __panel__(self) -> pn.viewable.Viewable:
+        return self._view
+
     def _on_process_id_changed(self, process_id: str | None = None):
+        process_description: Process | None = None
+        process_markdown: str | None = None
         if not process_id:
-            self._process_doc_markdown.object = "_No process selected._"
+            process_markdown = "_No process selected._"
+        else:
+            if process_id in self._process_descriptions:
+                process_description = self._process_descriptions[process_id]
+            else:
+                try:
+                    process_description = self._on_get_process_description(process_id)
+                    self._process_descriptions[process_id] = process_description
+                except ClientException as e:
+                    process_description = None
+                    process_markdown = (
+                        f"**Error**: {e.title} (status `{e.status_code}`): {e.detail}"
+                    )
+            if process_description:
+                process_markdown = (
+                    f"**{process_description.title}**\n\n"
+                    f"{process_description.description}"
+                )
+
+        self._process_doc_markdown.object = process_markdown
+        if not process_description:
+            self._submit_button.disabled = True
             self._input_widgets = {}
             self._output_widgets = {}
-            self._inputs_panel[1:] = []
-            self._outputs_panel[1:] = []
-            return
-
-        if process_id in self._process_descriptions:
-            process_description = self._process_descriptions[process_id]
         else:
-            try:
-                process_description = self._on_get_process_description(process_id)
-            except ClientException as e:
-                # TODO: Show error in GUI
-                print(f"error: {e}")
-                return
-            self._process_descriptions[process_id] = process_description
+            self._submit_button.disabled = False
+            self._input_widgets = {
+                param_name: param_schema_to_widget(
+                    param_name,
+                    input_description.schema_.model_dump(
+                        mode="json", exclude_defaults=True
+                    ),
+                    False,
+                )
+                for param_name, input_description in (
+                    process_description.inputs or {}
+                ).items()
+            }
+            self._output_widgets = {}
 
-        # print(process_description)
-        self._process_doc_markdown.object = (
-            f"**{process_description.title}**\n\n{process_description.description}"
-        )
-
-        self._input_widgets = {
-            param_name: param_schema_to_widget(
-                param_name,
-                input_description.schema_.model_dump(
-                    mode="json", exclude_defaults=True
-                ),
-                False,
-            )
-            for param_name, input_description in (
-                process_description.inputs or {}
-            ).items()
-        }
-
-        self._output_widgets = {
-            param_name: param_schema_to_widget(
-                param_name,
-                output_description.schema_.model_dump(
-                    mode="json", exclude_defaults=True
-                ),
-                False,
-            )
-            for param_name, output_description in (
-                process_description.outputs or {}
-            ).items()
-        }
-
-        self._inputs_panel[1:] = self._input_widgets.values()
-        self._outputs_panel[1:] = self._output_widgets.values()
+        self._inputs_panel[:] = self._input_widgets.values()
+        self._outputs_panel[:] = self._output_widgets.values()
 
     def _on_submit_request_button_clicked(self, _event: Any = None):
         process_id = self._process_select.value
@@ -164,6 +164,7 @@ class Submitter(pn.viewable.Viewer):
         if process_description is None:
             return
         request = Execute(
+            # TODO: ensure v.value is JSON-serializable
             inputs={k: v.value for k, v in self._input_widgets.items()},
             outputs={
                 k: Output(
@@ -202,6 +203,3 @@ class Submitter(pn.viewable.Viewer):
     def _update_buttons(self):
         # TODO implement action enablement
         pass
-
-    def __panel__(self) -> pn.viewable.Viewable:
-        return self._view

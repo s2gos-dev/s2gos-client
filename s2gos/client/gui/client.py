@@ -31,7 +31,7 @@ class Client(GeneratedClient):
     def show_submitter(self):
         if self._submitter is None:
             self._submitter = Submitter(
-                self._get_processes(),
+                *self._get_processes(),
                 on_get_process_description=self._get_process_description,
                 on_submit_request=self._submit_request,
             )
@@ -46,7 +46,7 @@ class Client(GeneratedClient):
     def show_jobs(self):
         if self._jobs_table is None:
             self._jobs_table = JobsTable(
-                self._get_jobs(),
+                *self._get_jobs(),
                 on_cancel_job=self._cancel_job,
                 on_delete_job=self._delete_job,
                 on_restart_job=self._restart_job,
@@ -87,22 +87,16 @@ class Client(GeneratedClient):
         while self._update_thread is not None:
             time.sleep(self._update_interval)
             if self._jobs_table is not None:
-                self._jobs_table.set_job_list(self._get_jobs())
+                self._jobs_table.set_job_list(*self._get_jobs())
 
-    def _get_processes(self) -> ProcessList:
+    def _get_processes(self) -> tuple[ProcessList, ClientException | None]:
         try:
-            process_list = self.get_processes()
+            return self.get_processes(), None
         except ClientException as e:
-            process_list = []
-            # TODO: handle error in GUI
-            print(f"Error: {e}")
-        return process_list
+            return ProcessList(processes=[], links=[]), e
 
-    def _get_jobs(self) -> JobList:
+    def _get_jobs(self) -> tuple[JobList, ClientException | None]:
         try:
-            job_list = self.get_jobs()
+            return self.get_jobs(), None
         except ClientException as e:
-            job_list = JobList(jobs=[], links=[])
-            # TODO: handle error in GUI
-            print(f"Error: {e}")
-        return job_list
+            return JobList(jobs=[], links=[]), e

@@ -9,7 +9,13 @@ import panel as pn
 import param
 
 from s2gos.client import ClientException
-from s2gos.common.models import JobList, StatusCode, StatusInfo
+from s2gos.common.models import (
+    JobList,
+    StatusCode,
+    StatusInfo,
+    Results,
+    InlineOrRefData,
+)
 
 JobAction: TypeAlias = Callable[[str], Any]
 
@@ -20,12 +26,15 @@ class JobsTable(pn.viewable.Viewer):
     def __init__(
         self,
         job_list: JobList,
+        job_list_error: ClientException | None,
         on_delete_job: Optional[JobAction] = None,
         on_cancel_job: Optional[JobAction] = None,
         on_restart_job: Optional[JobAction] = None,
         on_get_job_result: Optional[JobAction] = None,
     ):
         super().__init__()
+        # TODO: Report job_list_error if not None
+        self._job_list_error = job_list_error
         self._on_delete_job = on_delete_job
         self._on_cancel_job = on_cancel_job
         self._on_restart_job = on_restart_job
@@ -76,10 +85,14 @@ class JobsTable(pn.viewable.Viewer):
 
         # Reaction to changes in jobs list
         self.param.watch(self._on_jobs_changed, "_jobs")
-        self._jobs = job_list.jobs
+        self.set_job_list(job_list, job_list_error)
 
-    def set_job_list(self, job_list: JobList):
+    def __panel__(self) -> pn.viewable.Viewable:
+        return self._view
+
+    def set_job_list(self, job_list: JobList, job_list_error: ClientException | None):
         self._jobs = job_list.jobs
+        self._job_list_error = job_list_error
 
     def _on_jobs_changed(self, _event: Any = None):
         """Will be called automatically, if self.jobs changes."""
@@ -140,20 +153,28 @@ class JobsTable(pn.viewable.Viewer):
             "⚠️ Failed deleting {job}: {message}",
         )
 
-    def _on_restart_jobs_clicked(self, event: Any):
+    def _on_restart_jobs_clicked(self, _event: Any):
         self._run_action_on_selected_jobs(
             self._on_restart_job,
             "✅ Restarted {job}",
             "⚠️ Failed restarting {job}: {message}",
         )
 
-    def _on_get_job_result_clicked(self, event: Any):
-        def handle_result(job_id: str, result):
+    def _on_get_job_result_clicked(self, _event: Any):
+        def handle_result(_job_id: str, results: Results | dict):
+            # noinspection PyProtectedMember
             from IPython import get_ipython
 
-            var_name = "result"
-            get_ipython().user_ns[var_name] = result
-            return "✅ Stored result of {job} " + f"in variable **`{var_name}`**"
+            if isinstance(results, Results):
+                results = results.root
+            if isinstance(results, dict):
+                results = {
+                    k: (v.root if isinstance(v, InlineOrRefData) else v)
+                    for k, v in results.items()
+                }
+            var_name = "_results"
+            get_ipython().user_ns[var_name] = results
+            return "✅ Stored result(s) of {job} " + f"in variable **`{var_name}`**"
 
         self._run_action_on_selected_jobs(
             self._on_get_job_result,
@@ -185,9 +206,6 @@ class JobsTable(pn.viewable.Viewer):
                     )
                 )
         self._message_md.object = " \n".join(messages)
-
-    def __panel__(self) -> pn.viewable.Viewable:
-        return self._view
 
     @classmethod
     def _new_tabulator(cls, job_list: JobList) -> pn.widgets.Tabulator:
