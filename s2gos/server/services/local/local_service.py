@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 
 from s2gos.common.models import (
     ConfClasses,
-    Execute,
+    ProcessRequest,
     JobList,
     LandingPage,
     Process,
@@ -81,7 +81,7 @@ class LocalService(Service):
         process_entry = self._get_process_entry(process_id)
         return process_entry.process
 
-    async def execute(self, process_id: str, request: Execute) -> JSONResponse:
+    async def execute(self, process_id: str, request: ProcessRequest) -> JSONResponse:
         process_entry = self._get_process_entry(process_id)
         process_info = process_entry.process
 

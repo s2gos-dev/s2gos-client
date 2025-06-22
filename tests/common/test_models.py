@@ -19,7 +19,6 @@ REQUIRED_ENUMS = {
 REQUIRED_MODELS = {
     "ApiError",
     "ConfClasses",
-    "Execute",
     "Format",
     "InputDescription",
     "JobInfo",
@@ -31,6 +30,7 @@ REQUIRED_MODELS = {
     "OutputDescription",
     "Process",
     "ProcessList",
+    "ProcessRequest",
     "ProcessSummary",
     "QualifiedInputValue",
     "Reference",

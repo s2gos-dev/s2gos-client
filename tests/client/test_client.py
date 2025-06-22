@@ -7,7 +7,7 @@ from unittest import TestCase
 from s2gos.client import Client
 from s2gos.common.models import (
     ConfClasses,
-    Execute,
+    ProcessRequest,
     InlineOrRefData,
     JobList,
     LandingPage,
@@ -53,7 +53,7 @@ class ClientTest(TestCase):
     def test_execute(self):
         result = self.client.execute(
             process_id="gobabeb_1",
-            request=Execute(
+            request=ProcessRequest(
                 inputs={"bbox": InlineOrRefData(root=[10, 20, 30, 40])}, outputs={}
             ),
         )

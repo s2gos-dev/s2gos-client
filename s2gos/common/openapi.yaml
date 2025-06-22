@@ -143,7 +143,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/process'
               examples:
-                processDecription:
+                processDescription:
                   summary: A Process Description example
                   externalValue: ../../examples/json/ProcessDescription.json
         "404":
@@ -172,11 +172,11 @@ paths:
         schema:
           type: string
       requestBody:
-        description: Mandatory execute request JSON
+        description: Mandatory request JSON
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/execute'
+              $ref: '#/components/schemas/processRequest'
         required: true
       responses:
         "200":
@@ -466,7 +466,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/link'
-    execute:
+    processRequest:
       type: object
       properties:
         inputs:

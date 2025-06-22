@@ -10,7 +10,7 @@ import param
 from s2gos.client import ClientException
 from s2gos.client.gui.js2panel import param_schema_to_widget
 from s2gos.common.models import (
-    Execute,
+    ProcessRequest,
     Process,
     ProcessList,
     Output,
@@ -19,7 +19,7 @@ from s2gos.common.models import (
     JobInfo,
 )
 
-SubmitRequestAction: TypeAlias = Callable[[str, Execute], JobInfo]
+SubmitRequestAction: TypeAlias = Callable[[str, ProcessRequest], JobInfo]
 GetProcessAction: TypeAlias = Callable[[str], Process]
 
 
@@ -163,7 +163,7 @@ class Submitter(pn.viewable.Viewer):
         process_description = self._process_descriptions.get(process_id)
         if process_description is None:
             return
-        request = Execute(
+        request = ProcessRequest(
             # TODO: ensure v.value is JSON-serializable
             inputs={k: v.value for k, v in self._input_widgets.items()},
             outputs={
