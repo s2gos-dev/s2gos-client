@@ -780,6 +780,11 @@ components:
             - $ref: '#/components/schemas/reference'
         items:
           oneOf:
+          - type: array
+            items:
+              oneOf:
+              - $ref: '#/components/schemas/schema'
+              - $ref: '#/components/schemas/reference'
           - $ref: '#/components/schemas/schema'
           - $ref: '#/components/schemas/reference'
         properties:
