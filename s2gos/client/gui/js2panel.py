@@ -13,16 +13,6 @@ TYPES = "boolean", "integer", "number", "string", "array"
 DEFAULTS = {"boolean": False, "integer": 0, "number": 0.0, "string": "", "array": []}
 
 
-def params_schema_to_widgets(schema: dict[str, Any]) -> dict[str, param.Parameterized]:
-    widgets = {}
-    for param_name, param_schema in schema["properties"].items():
-        required = param_name in schema.get("required", [])
-        widget = param_schema_to_widget(param_name, param_schema, required)
-        if widget is not None:
-            widgets[param_name] = widget
-    return widgets
-
-
 def param_schema_to_widget(
     param_name: str, param_schema: dict[str, Any], _required: bool
 ) -> param.Parameterized | None:

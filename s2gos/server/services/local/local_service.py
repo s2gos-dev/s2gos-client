@@ -10,15 +10,15 @@ from fastapi.responses import JSONResponse
 
 from s2gos.common.models import (
     ConfClasses,
-    ProcessRequest,
+    JobInfo,
     JobList,
     LandingPage,
     Process,
     ProcessList,
+    ProcessRequest,
     ProcessSummary,
     Results,
     StatusCode,
-    JobInfo,
 )
 from s2gos.server.exceptions import JSONContentException
 from s2gos.server.service import Service

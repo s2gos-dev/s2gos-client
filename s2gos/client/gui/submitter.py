@@ -1,7 +1,7 @@
 #  Copyright (c) 2025 by ESA DTE-S2GOS team and contributors
 #  Permissions are hereby granted under the terms of the Apache 2.0 License:
 #  https://opensource.org/license/apache-2-0.
-
+import datetime
 from typing import Any, Callable, TypeAlias
 
 import panel as pn
@@ -10,13 +10,13 @@ import param
 from s2gos.client import ClientException
 from s2gos.client.gui.js2panel import param_schema_to_widget
 from s2gos.common.models import (
-    ProcessRequest,
+    Format,
+    JobInfo,
+    Output,
     Process,
     ProcessList,
-    Output,
-    Format,
+    ProcessRequest,
     TransmissionMode,
-    JobInfo,
 )
 
 SubmitRequestAction: TypeAlias = Callable[[str, ProcessRequest], JobInfo]
@@ -164,8 +164,9 @@ class Submitter(pn.viewable.Viewer):
         if process_description is None:
             return
         request = ProcessRequest(
-            # TODO: ensure v.value is JSON-serializable
-            inputs={k: v.value for k, v in self._input_widgets.items()},
+            inputs={
+                k: _serialize_for_json(v.value) for k, v in self._input_widgets.items()
+            },
             outputs={
                 k: Output(
                     format=Format(
@@ -203,3 +204,10 @@ class Submitter(pn.viewable.Viewer):
     def _update_buttons(self):
         # TODO implement action enablement
         pass
+
+
+def _serialize_for_json(value: Any):
+    # check if there are more cases to be handled
+    if isinstance(value, datetime.date):
+        return value.isoformat()
+    return value

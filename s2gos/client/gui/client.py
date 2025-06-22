@@ -11,7 +11,7 @@ from s2gos.client import ClientException
 from s2gos.client.gui.jobstable import JobsTable
 from s2gos.client.gui.submitter import Submitter
 from s2gos.client.transport import Transport
-from s2gos.common.models import JobList, ProcessList, JobInfo, ProcessRequest
+from s2gos.common.models import JobInfo, JobList, ProcessList, ProcessRequest
 
 
 class Client(GeneratedClient):

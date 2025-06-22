@@ -11,8 +11,8 @@ from concurrent.futures import Future
 from typing import Any, Callable, Optional
 
 from s2gos.common.models import (
-    StatusCode,
     JobInfo,
+    StatusCode,
     Type,
 )
 

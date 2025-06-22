@@ -10,11 +10,11 @@ import param
 
 from s2gos.client import ClientException
 from s2gos.common.models import (
-    JobList,
-    StatusCode,
-    JobInfo,
-    Results,
     InlineOrRefData,
+    JobInfo,
+    JobList,
+    Results,
+    StatusCode,
 )
 
 JobAction: TypeAlias = Callable[[str], Any]

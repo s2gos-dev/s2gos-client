@@ -7,14 +7,14 @@ from unittest import TestCase
 from s2gos.client import Client
 from s2gos.common.models import (
     ConfClasses,
-    ProcessRequest,
     InlineOrRefData,
+    JobInfo,
     JobList,
     LandingPage,
     Process,
     ProcessList,
+    ProcessRequest,
     Results,
-    JobInfo,
 )
 from tests.client.helpers import MockTransport
 
