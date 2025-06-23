@@ -16,7 +16,7 @@ from s2gos.common.models import (
     ProcessDescription,
     ProcessList,
     ProcessRequest,
-    ProcessResults,
+    JobResults,
     ProcessSummary,
     StatusCode,
 )
@@ -40,15 +40,15 @@ class LocalService(Service):
         description: Optional[str] = None,
         executor: Optional[ThreadPoolExecutor | ProcessPoolExecutor] = None,
     ):
-        self.landing_page = Capabilities(title=title, description=description, links=[])
+        self.capabilities = Capabilities(title=title, description=description, links=[])
         self.executor = executor or ThreadPoolExecutor(max_workers=3)
         self.process_registry = ProcessRegistry()
         self.jobs: dict[str, Job] = {}
 
-    async def get_landing_page(self) -> Capabilities:
-        return self.landing_page
+    async def get_capabilities(self) -> Capabilities:
+        return self.capabilities
 
-    async def get_conformance_classes(self) -> ConformanceDeclaration:
+    async def get_conformance(self) -> ConformanceDeclaration:
         return ConformanceDeclaration(
             conformsTo=[
                 "http://www.opengis.net/spec/ogcapi-processes-1/1.0/conf/core",
@@ -77,11 +77,13 @@ class LocalService(Service):
             links=[],
         )
 
-    async def get_process_description(self, process_id: str) -> ProcessDescription:
+    async def get_process(self, process_id: str) -> ProcessDescription:
         process_entry = self._get_process_entry(process_id)
         return process_entry.process
 
-    async def execute(self, process_id: str, request: ProcessRequest) -> JSONResponse:
+    async def execute_process(
+        self, process_id: str, request: ProcessRequest
+    ) -> JSONResponse:
         process_entry = self._get_process_entry(process_id)
         process_info = process_entry.process
 
@@ -121,11 +123,11 @@ class LocalService(Service):
     async def get_jobs(self) -> JobList:
         return JobList(jobs=[job.status_info for job in self.jobs.values()], links=[])
 
-    async def get_status(self, job_id: str) -> JobInfo:
+    async def get_job(self, job_id: str) -> JobInfo:
         job = self._get_job(job_id, forbidden_status_codes={})
         return job.status_info
 
-    async def dismiss(self, job_id: str) -> JobInfo:
+    async def dismiss_job(self, job_id: str) -> JobInfo:
         job = self._get_job(job_id, forbidden_status_codes={})
         if job.status_info.status in (StatusCode.accepted, StatusCode.running):
             job.cancel()
@@ -137,7 +139,7 @@ class LocalService(Service):
             del self.jobs[job_id]
         return job.status_info
 
-    async def get_result(self, job_id: str) -> ProcessResults:
+    async def get_job_results(self, job_id: str) -> JobResults:
         job = self._get_job(
             job_id,
             forbidden_status_codes={
@@ -151,7 +153,7 @@ class LocalService(Service):
         entry = self.process_registry.get_entry(job.status_info.processID)
         outputs = entry.process.outputs or {}
         output_count = len(outputs)
-        return ProcessResults.model_validate(
+        return JobResults.model_validate(
             {
                 output_name: result if output_count == 1 else result[i]
                 for i, output_name in enumerate(outputs.keys())
@@ -159,7 +161,7 @@ class LocalService(Service):
         )
 
     # TODO: be user-friendly, turn kwargs into parameter list
-    def process_info(self, **kwargs) -> Callable[[Callable], Callable]:
+    def process(self, **kwargs) -> Callable[[Callable], Callable]:
         """A decorator for user functions to be registered as processes."""
 
         def _factory(function: Callable):

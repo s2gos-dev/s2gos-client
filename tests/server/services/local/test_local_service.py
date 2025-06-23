@@ -18,7 +18,7 @@ class LocalServiceTest(TestCase):
 
         self.assertIsNone(service.process_registry.get_entry("foo"))
 
-        @service.process_info(id="foo", version="1.4.2")
+        @service.process(id="foo", version="1.4.2")
         def foo(x: bool, y: int) -> float:
             return 2 * y if x else y / 2
 
