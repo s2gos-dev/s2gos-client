@@ -20,7 +20,7 @@ from generators.openapi import OAMethod, OASchema, load_openapi_schema
 GENERATOR_NAME = str(Path(__file__).name)
 
 ROUTES_PATH = S2GOS_PATH / "server" / "routes.py"
-SERVICE_PATH = S2GOS_PATH / "server" / "transport.py"
+SERVICE_PATH = S2GOS_PATH / "server" / "service.py"
 
 
 def main():

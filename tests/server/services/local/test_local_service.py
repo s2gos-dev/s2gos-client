@@ -4,7 +4,7 @@
 
 from unittest import TestCase
 
-from s2gos.common.models import Process
+from s2gos.common.models import ProcessDescription
 from s2gos.server.services.local import LocalService, ProcessRegistry
 
 
@@ -26,6 +26,6 @@ class LocalServiceTest(TestCase):
         self.assertIsInstance(entry, ProcessRegistry.Entry)
         self.assertIs(foo, entry.function)
         foo_process = entry.process
-        self.assertIsInstance(foo_process, Process)
+        self.assertIsInstance(foo_process, ProcessDescription)
         self.assertEqual("foo", foo_process.id)
         self.assertEqual("1.4.2", foo_process.version)

@@ -10,15 +10,15 @@ from fastapi.responses import JSONResponse
 
 from s2gos.common.models import (
     ConfClasses,
-    Execute,
+    JobInfo,
     JobList,
     LandingPage,
-    Process,
+    ProcessDescription,
     ProcessList,
+    ProcessRequest,
+    ProcessResults,
     ProcessSummary,
-    Results,
     StatusCode,
-    StatusInfo,
 )
 from s2gos.server.exceptions import JSONContentException
 from s2gos.server.service import Service
@@ -77,11 +77,11 @@ class LocalService(Service):
             links=[],
         )
 
-    async def get_process_description(self, process_id: str) -> Process:
+    async def get_process_description(self, process_id: str) -> ProcessDescription:
         process_entry = self._get_process_entry(process_id)
         return process_entry.process
 
-    async def execute(self, process_id: str, request: Execute) -> JSONResponse:
+    async def execute(self, process_id: str, request: ProcessRequest) -> JSONResponse:
         process_entry = self._get_process_entry(process_id)
         process_info = process_entry.process
 
@@ -121,11 +121,11 @@ class LocalService(Service):
     async def get_jobs(self) -> JobList:
         return JobList(jobs=[job.status_info for job in self.jobs.values()], links=[])
 
-    async def get_status(self, job_id: str) -> StatusInfo:
+    async def get_status(self, job_id: str) -> JobInfo:
         job = self._get_job(job_id, forbidden_status_codes={})
         return job.status_info
 
-    async def dismiss(self, job_id: str) -> StatusInfo:
+    async def dismiss(self, job_id: str) -> JobInfo:
         job = self._get_job(job_id, forbidden_status_codes={})
         if job.status_info.status in (StatusCode.accepted, StatusCode.running):
             job.cancel()
@@ -137,7 +137,7 @@ class LocalService(Service):
             del self.jobs[job_id]
         return job.status_info
 
-    async def get_result(self, job_id: str) -> Results:
+    async def get_result(self, job_id: str) -> ProcessResults:
         job = self._get_job(
             job_id,
             forbidden_status_codes={
@@ -151,7 +151,7 @@ class LocalService(Service):
         entry = self.process_registry.get_entry(job.status_info.processID)
         outputs = entry.process.outputs or {}
         output_count = len(outputs)
-        return Results.model_validate(
+        return ProcessResults.model_validate(
             {
                 output_name: result if output_count == 1 else result[i]
                 for i, output_name in enumerate(outputs.keys())

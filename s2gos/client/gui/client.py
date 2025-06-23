@@ -11,7 +11,7 @@ from s2gos.client import ClientException
 from s2gos.client.gui.jobstable import JobsTable
 from s2gos.client.gui.submitter import Submitter
 from s2gos.client.transport import Transport
-from s2gos.common.models import JobList, ProcessList, StatusInfo, Execute
+from s2gos.common.models import JobInfo, JobList, ProcessList, ProcessRequest
 
 
 class Client(GeneratedClient):
@@ -40,7 +40,7 @@ class Client(GeneratedClient):
     def _get_process_description(self, process_id: str):
         return self.get_process_description(process_id)
 
-    def _submit_request(self, process_id: str, request: Execute) -> StatusInfo:
+    def _submit_request(self, process_id: str, request: ProcessRequest) -> JobInfo:
         return self.execute(process_id, request)
 
     def show_jobs(self):

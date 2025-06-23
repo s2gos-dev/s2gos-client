@@ -17,24 +17,23 @@ REQUIRED_ENUMS = {
 }
 
 REQUIRED_MODELS = {
+    "ApiError",
     "ConfClasses",
-    "Exception",
-    "Execute",
     "Format",
     "InputDescription",
+    "JobInfo",
     "JobList",
     "LandingPage",
     "Link",
     "Metadata",
     "Output",
     "OutputDescription",
-    "Process",
+    "ProcessDescription",
     "ProcessList",
+    "ProcessRequest",
     "ProcessSummary",
-    "QualifiedInputValue",
     "Reference",
     "Schema",
-    "StatusInfo",
 }
 
 

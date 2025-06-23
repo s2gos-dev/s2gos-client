@@ -1,8 +1,17 @@
-## Changes in version 0.0.4 (in development)
-
-* Added basic request submit form to client GUI.
-
 ## Changes in version 0.0.5 (in development)
+
+- Changed `s2gos/common/openapi.yaml`
+  - renamed `exception` schema component into `apiError`
+  - renamed `statusInfo` schema component into `jobInfo`
+  - renamed `execute` schema component into `processRequest`
+  - renamed `process` schema component into `processDescription`
+  - renamed `results` schema component into `processResults`
+  - renamed `inline_response_200` schema component into `inlineValue`
+  - renamed `inlineOrRefData` schema component into `inlineOrRefValue`
+  - renamed `qualifiedInputValue` schema component into `qualifiedValue`
+  - extended `StatusInfo` by `traceback`
+  - regenerated code
+  - adjusted non-generated code accordingly
 
 
 ## Changes in version 0.0.4 (not released)

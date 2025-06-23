@@ -40,6 +40,7 @@ class ClientConfig(BaseModel):
             if env_var_name in os.environ:
                 default_config_dict[field_name] = os.environ[env_var_name]
 
+        config_dict = {}
         if not config_path.exists():
             config_dict = default_config_dict
         else:

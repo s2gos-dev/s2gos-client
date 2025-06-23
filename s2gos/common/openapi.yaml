@@ -47,7 +47,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/exception'
+                $ref: '#/components/schemas/apiError'
             text/html:
               schema:
                 type: string
@@ -96,7 +96,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/exception'
+                $ref: '#/components/schemas/apiError'
             text/html:
               schema:
                 type: string
@@ -141,9 +141,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/process'
+                $ref: '#/components/schemas/processDescription'
               examples:
-                processDecription:
+                processDescription:
                   summary: A Process Description example
                   externalValue: ../../examples/json/ProcessDescription.json
         "404":
@@ -151,7 +151,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/exception'
+                $ref: '#/components/schemas/apiError'
             text/html:
               schema:
                 type: string
@@ -172,11 +172,11 @@ paths:
         schema:
           type: string
       requestBody:
-        description: Mandatory execute request JSON
+        description: Mandatory request JSON
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/execute'
+              $ref: '#/components/schemas/processRequest'
         required: true
       responses:
         "200":
@@ -184,7 +184,7 @@ paths:
           content:
             /*:
               schema:
-                $ref: '#/components/schemas/inline_response_200'
+                $ref: '#/components/schemas/inlineValue'
         "201":
           description: Started asynchronous execution. Created job.
           headers:
@@ -199,13 +199,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/statusInfo'
+                $ref: '#/components/schemas/jobInfo'
         "404":
           description: The requested URI was not found.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/exception'
+                $ref: '#/components/schemas/apiError'
             text/html:
               schema:
                 type: string
@@ -214,7 +214,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/exception'
+                $ref: '#/components/schemas/apiError'
             text/html:
               schema:
                 type: string
@@ -252,7 +252,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/exception'
+                $ref: '#/components/schemas/apiError'
             text/html:
               schema:
                 type: string
@@ -264,7 +264,7 @@ paths:
       description: |
         Shows the status of a job.
 
-         For more information, see [Section 7.12](https://docs.ogc.org/is/18-062/18-062.html#sc_retrieve_status_info).
+        For more information, see [Section 7.12](https://docs.ogc.org/is/18-062/18-062.html#sc_retrieve_status_info).
       operationId: getStatus
       parameters:
       - name: jobId
@@ -279,13 +279,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/statusInfo'
+                $ref: '#/components/schemas/jobInfo'
         "404":
           description: The requested URI was not found.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/exception'
+                $ref: '#/components/schemas/apiError'
             text/html:
               schema:
                 type: string
@@ -294,7 +294,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/exception'
+                $ref: '#/components/schemas/apiError'
             text/html:
               schema:
                 type: string
@@ -316,17 +316,17 @@ paths:
           type: string
       responses:
         "200":
-          description: The status of a job.
+          description: Information about the job.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/statusInfo'
+                $ref: '#/components/schemas/jobInfo'
         "404":
           description: The requested URI was not found.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/exception'
+                $ref: '#/components/schemas/apiError'
             text/html:
               schema:
                 type: string
@@ -335,7 +335,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/exception'
+                $ref: '#/components/schemas/apiError'
             text/html:
               schema:
                 type: string
@@ -345,7 +345,7 @@ paths:
       - Result
       summary: retrieve the result(s) of a job
       description: |
-        Lists available results of a job. In case of a failure, lists exceptions instead.
+        Lists available results of a job. In case of a failure, lists errors instead.
 
         For more information, see [Section 7.13](https://docs.ogc.org/is/18-062/18-062.html#sc_retrieve_job_results).
       operationId: getResult
@@ -362,13 +362,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/results'
+                $ref: '#/components/schemas/processResults'
         "404":
           description: The requested URI was not found.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/exception'
+                $ref: '#/components/schemas/apiError'
             text/html:
               schema:
                 type: string
@@ -377,7 +377,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/exception'
+                $ref: '#/components/schemas/apiError'
             text/html:
               schema:
                 type: string
@@ -398,8 +398,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/link'
-    exception:
-      title: Exception Schema
+    apiError:
       required:
       - type
       type: object
@@ -415,7 +414,7 @@ components:
         instance:
           type: string
       additionalProperties: true
-      description: JSON schema for exceptions based on RFC 7807
+      description: API error based on RFC 7807
     confClasses:
       required:
       - conformsTo
@@ -440,7 +439,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/link'
-    process:
+    processDescription:
       allOf:
       - $ref: '#/components/schemas/processSummary'
       - type: object
@@ -462,22 +461,22 @@ components:
         jobs:
           type: array
           items:
-            $ref: '#/components/schemas/statusInfo'
+            $ref: '#/components/schemas/jobInfo'
         links:
           type: array
           items:
             $ref: '#/components/schemas/link'
-    execute:
+    processRequest:
       type: object
       properties:
         inputs:
           type: object
           additionalProperties:
             oneOf:
-            - $ref: '#/components/schemas/inlineOrRefData'
+            - $ref: '#/components/schemas/inlineOrRefValue'
             - type: array
               items:
-                $ref: '#/components/schemas/inlineOrRefData'
+                $ref: '#/components/schemas/inlineOrRefValue'
         outputs:
           type: object
           additionalProperties:
@@ -490,11 +489,11 @@ components:
           - document
         subscriber:
           $ref: '#/components/schemas/subscriber'
-    results:
+    processResults:
       type: object
       additionalProperties:
-        $ref: '#/components/schemas/inlineOrRefData'
-    statusInfo:
+        $ref: '#/components/schemas/inlineOrRefValue'
+    jobInfo:
       required:
       - jobID
       - status
@@ -533,6 +532,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/link'
+        # Extension of OGC API / Processes core v1
+        traceback:
+          type: array
+          items:
+            type: string
     link:
       required:
       - href
@@ -607,15 +611,10 @@ components:
             oneOf:
             - $ref: '#/components/schemas/schema'
             - $ref: '#/components/schemas/reference'
-    inlineOrRefData:
+    inlineOrRefValue:
       oneOf:
-      - type: string
-      - type: number
-      - type: integer
-      - type: boolean
-      - type: array
-      - $ref: '#/components/schemas/bbox'
-      - $ref: '#/components/schemas/qualifiedInputValue'
+      - $ref: '#/components/schemas/inlineValue'
+      - $ref: '#/components/schemas/qualifiedValue'
       - $ref: '#/components/schemas/link'
     output:
       type: object
@@ -832,7 +831,7 @@ components:
         contentSchema:
           type: string
       additionalProperties: false
-    qualifiedInputValue:
+    qualifiedValue:
       allOf:
       - $ref: '#/components/schemas/format'
       - required:
@@ -914,122 +913,15 @@ components:
           enum:
           - http://www.opengis.net/def/crs/OGC/1.3/CRS84
           - http://www.opengis.net/def/crs/OGC/0/CRS84h
-    inline_response_200:
+    inlineValue:
       oneOf:
-      - type: string
-      - type: number
-      - type: integer
-      - type: object
-        nullable: true
-      - type: array
-        items:
-          type: object
       - type: boolean
       - type: string
         format: binary
-      - $ref: '#/components/schemas/results'
-  responses:
-    LandingPage:
-      description: |-
-        The landing page provides links to the API definition
-        (link relations `service-desc` and `service-doc`),
-        the Conformance declaration (path `/conformance`,
-        link relation `http://www.opengis.net/def/rel/ogc/1.0/conformance`), and to other resources.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/landingPage'
-        text/html:
-          schema:
-            type: string
-    ServerError:
-      description: A server error occurred.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/exception'
-        text/html:
-          schema:
-            type: string
-    ConformanceDeclaration:
-      description: |-
-        The URIs of all conformance classes supported by the server.
-
-        To support "generic" clients that want to access multiple
-        OGC API - Processes implementations - and not "just" a specific
-        API / server, the server declares the conformance
-        classes it implements and conforms to.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/confClasses'
-          example:
-            conformsTo:
-            - http://www.opengis.net/spec/ogcapi-processes/1.0/conf/core
-        text/html:
-          schema:
-            type: string
-    ProcessList:
-      description: Information about the available processes
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/processList'
-    ProcessDescription:
-      description: A process description.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/process'
-          examples:
-            processDecription:
-              summary: A Process Description example
-              externalValue: ../../examples/json/ProcessDescription.json
-    NotFound:
-      description: The requested URI was not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/exception'
-        text/html:
-          schema:
-            type: string
-    JobList:
-      description: A list of jobs for this process.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/jobList'
-    ExecuteSync:
-      description: Result of synchronous execution
-      content:
-        /*:
-          schema:
-            $ref: '#/components/schemas/inline_response_200'
-    ExecuteAsync:
-      description: Started asynchronous execution. Created job.
-      headers:
-        Location:
-          description: URL to check the status of the execution/job.
-          schema:
-            type: string
-        Preference-Applied:
-          description: The preference applied to execute the process asynchronously (see. RFC 2740).
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/statusInfo'
-    Status:
-      description: The status of a job.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/statusInfo'
-    Results:
-      description: The results of a job.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/results'
+      - type: string
+      - type: integer
+      - type: number
+      - type: array
+      - type: object
+        nullable: true
+      - $ref: '#/components/schemas/bbox'

@@ -7,7 +7,7 @@ from unittest import TestCase
 from s2gos.common.models import (
     InputDescription,
     OutputDescription,
-    Process,
+    ProcessDescription,
     Schema,
     Type1,
 )
@@ -33,7 +33,7 @@ class ProcessRegistryTest(BaseModelMixin, TestCase):
         self.assertIsInstance(entry, ProcessRegistry.Entry)
         self.assertIs(f1, entry.function)
         process = entry.process
-        self.assertIsInstance(process, Process)
+        self.assertIsInstance(process, ProcessDescription)
         self.assertEqual(
             "tests.server.services.local.test_process_registry:f1", process.id
         )
@@ -64,7 +64,7 @@ class ProcessRegistryTest(BaseModelMixin, TestCase):
         self.assertIsInstance(entry, ProcessRegistry.Entry)
         self.assertIs(f2, entry.function)
         process = entry.process
-        self.assertIsInstance(process, Process)
+        self.assertIsInstance(process, ProcessDescription)
         self.assertEqual(
             "tests.server.services.local.test_process_registry:f2", process.id
         )
@@ -105,7 +105,7 @@ class ProcessRegistryTest(BaseModelMixin, TestCase):
         self.assertIsInstance(e1, ProcessRegistry.Entry)
         self.assertIs(f1, e1.function)
         p1 = e1.process
-        self.assertIsInstance(p1, Process)
+        self.assertIsInstance(p1, ProcessDescription)
         self.assertEqual("foo", p1.id)
         self.assertEqual("1.0.2", p1.version)
         self.assertEqual("My Foo", p1.title)
@@ -122,13 +122,13 @@ class ProcessRegistryTest(BaseModelMixin, TestCase):
         registry.register_function(f1)
         self.assertEqual(1, len(registry.get_process_list()))
         p1 = registry.get_process_list()[0]
-        self.assertIsInstance(p1, Process)
+        self.assertIsInstance(p1, ProcessDescription)
         self.assertIs(p1, registry.get_process(p1.id))
 
         registry.register_function(f2)
         self.assertEqual(2, len(registry.get_process_list()))
         p1, p2 = registry.get_process_list()
-        self.assertIsInstance(p1, Process)
-        self.assertIsInstance(p2, Process)
+        self.assertIsInstance(p1, ProcessDescription)
+        self.assertIsInstance(p2, ProcessDescription)
         self.assertIs(p1, registry.get_process(p1.id))
         self.assertIs(p2, registry.get_process(p2.id))
