@@ -7,7 +7,6 @@ from unittest import TestCase
 from s2gos.client import Client
 from s2gos.common.models import (
     ConfClasses,
-    InlineOrRefValue,
     JobInfo,
     JobList,
     LandingPage,
