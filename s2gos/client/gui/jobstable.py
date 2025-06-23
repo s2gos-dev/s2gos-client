@@ -7,13 +7,14 @@ from typing import Any, Callable, Optional, TypeAlias
 import pandas as pd
 import panel as pn
 import param
+from pydantic import BaseModel
 
 from s2gos.client import ClientException
 from s2gos.common.models import (
     InlineOrRefValue,
     JobInfo,
     JobList,
-    ProcessResults,
+    JobResults,
     StatusCode,
 )
 
@@ -30,7 +31,7 @@ class JobsTable(pn.viewable.Viewer):
         on_delete_job: Optional[JobAction] = None,
         on_cancel_job: Optional[JobAction] = None,
         on_restart_job: Optional[JobAction] = None,
-        on_get_job_result: Optional[JobAction] = None,
+        on_get_job_results: Optional[JobAction] = None,
     ):
         super().__init__()
         # TODO: Report job_list_error if not None
@@ -38,7 +39,7 @@ class JobsTable(pn.viewable.Viewer):
         self._on_delete_job = on_delete_job
         self._on_cancel_job = on_cancel_job
         self._on_restart_job = on_restart_job
-        self._on_get_job_result = on_get_job_result
+        self._on_get_job_results = on_get_job_results
         self._tabulator = self._new_tabulator(job_list)
         self._tabulator.param.watch(self._update_buttons, "selection")
         # A placeholder for clicked action
@@ -63,8 +64,8 @@ class JobsTable(pn.viewable.Viewer):
             on_click=self._on_restart_jobs_clicked,
             disabled=True,
         )
-        self._get_result_button = pn.widgets.Button(
-            name="Get Result",
+        self._get_results_button = pn.widgets.Button(
+            name="Get Results",
             # tooltip="Gets the results from the selected job(s)",
             button_type="primary",
             on_click=self._on_get_job_result_clicked,
@@ -74,7 +75,7 @@ class JobsTable(pn.viewable.Viewer):
             self._cancel_button,
             self._delete_button,
             self._restart_button,
-            self._get_result_button,
+            self._get_results_button,
         )
         self._message_md = pn.pane.Markdown("")
         self._view = pn.Column(
@@ -118,8 +119,8 @@ class JobsTable(pn.viewable.Viewer):
                 {StatusCode.successful, StatusCode.dismissed, StatusCode.failed},
             )
         )
-        self._get_result_button.disabled = (
-            self._on_get_job_result is None
+        self._get_results_button.disabled = (
+            self._on_get_job_results is None
             or len(selected_jobs) != 1
             or self.is_disabled(
                 selected_jobs, {StatusCode.successful, StatusCode.failed}
@@ -161,25 +162,25 @@ class JobsTable(pn.viewable.Viewer):
         )
 
     def _on_get_job_result_clicked(self, _event: Any):
-        def handle_result(_job_id: str, results: ProcessResults | dict):
+        def handle_results(_job_id: str, results: JobResults | dict):
             # noinspection PyProtectedMember
             from IPython import get_ipython
 
-            if isinstance(results, ProcessResults):
+            if isinstance(results, JobResults):
                 results = results.root
             if isinstance(results, dict):
                 results = {
-                    k: (v.root if isinstance(v, InlineOrRefValue) else v)
+                    k: (v.model_dump() if isinstance(v, BaseModel) else v)
                     for k, v in results.items()
                 }
             var_name = "_results"
             get_ipython().user_ns[var_name] = results
-            return "✅ Stored result(s) of {job} " + f"in variable **`{var_name}`**"
+            return "✅ Stored results of {job} " + f"in variable **`{var_name}`**"
 
         self._run_action_on_selected_jobs(
-            self._on_get_job_result,
-            handle_result,
-            "⚠️ Failed to get result for {job}: {message}",
+            self._on_get_job_results,
+            handle_results,
+            "⚠️ Failed to get results for {job}: {message}",
         )
 
     def _run_action_on_selected_jobs(

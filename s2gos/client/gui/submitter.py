@@ -19,7 +19,7 @@ from s2gos.common.models import (
     TransmissionMode,
 )
 
-SubmitRequestAction: TypeAlias = Callable[[str, ProcessRequest], JobInfo]
+ExecuteProcessAction: TypeAlias = Callable[[str, ProcessRequest], JobInfo]
 GetProcessAction: TypeAlias = Callable[[str], ProcessDescription]
 
 
@@ -31,15 +31,15 @@ class Submitter(pn.viewable.Viewer):
         self,
         process_list: ProcessList,
         process_list_error: ClientException | None,
-        on_submit_request: SubmitRequestAction,
-        on_get_process_description: GetProcessAction,
+        on_get_process: GetProcessAction,
+        on_execute_process: ExecuteProcessAction,
     ):
         super().__init__()
         self._processes = process_list.processes
         self._process_list_error = process_list_error
 
-        self._on_submit_request = on_submit_request
-        self._on_get_process_description = on_get_process_description
+        self._on_execute_process = on_execute_process
+        self._on_get_process = on_get_process
 
         process_select_options = [p.id for p in process_list.processes]
         if process_select_options:
@@ -63,11 +63,11 @@ class Submitter(pn.viewable.Viewer):
             self._process_doc_markdown,
         )
 
-        self._submit_button = pn.widgets.Button(
-            name="Submit",
-            # tooltip="Submits the current request",
+        self._execute_button = pn.widgets.Button(
+            name="Execute",
+            # tooltip="Executes the selected process with the current request",
             button_type="primary",
-            on_click=self._on_submit_request_button_clicked,
+            on_click=self._on_execute_button_clicked,
             disabled=True,
         )
         self._open_button = pn.widgets.Button(
@@ -87,7 +87,7 @@ class Submitter(pn.viewable.Viewer):
         )
 
         action_panel = pn.Row(
-            self._submit_button,
+            self._execute_button,
             self._open_button,
             self._save_button,
             self._save_as_button,
@@ -121,7 +121,7 @@ class Submitter(pn.viewable.Viewer):
                 process_description = self._process_descriptions[process_id]
             else:
                 try:
-                    process_description = self._on_get_process_description(process_id)
+                    process_description = self._on_get_process(process_id)
                     self._process_descriptions[process_id] = process_description
                 except ClientException as e:
                     process_description = None
@@ -136,11 +136,11 @@ class Submitter(pn.viewable.Viewer):
 
         self._process_doc_markdown.object = process_markdown
         if not process_description:
-            self._submit_button.disabled = True
+            self._execute_button.disabled = True
             self._input_widgets = {}
             self._output_widgets = {}
         else:
-            self._submit_button.disabled = False
+            self._execute_button.disabled = False
             self._input_widgets = {
                 param_name: param_schema_to_widget(
                     param_name,
@@ -158,7 +158,7 @@ class Submitter(pn.viewable.Viewer):
         self._inputs_panel[:] = self._input_widgets.values()
         self._outputs_panel[:] = self._output_widgets.values()
 
-    def _on_submit_request_button_clicked(self, _event: Any = None):
+    def _on_execute_button_clicked(self, _event: Any = None):
         process_id = self._process_select.value
         process_description = self._process_descriptions.get(process_id)
         if process_description is None:
@@ -180,14 +180,14 @@ class Submitter(pn.viewable.Viewer):
             },
         )
         try:
-            self._submit_button.disabled = True
-            _status_info = self._on_submit_request(process_id, request)
+            self._execute_button.disabled = True
+            _job_info = self._on_execute_process(process_id, request)
             # TODO: Show status info in GUI
         except ClientException as e:
             # TODO: Show error in GUI
             print(f"error: {e}")
         finally:
-            self._submit_button.disabled = False
+            self._execute_button.disabled = False
 
     def _on_open_request_clicked(self, _event: Any = None):
         # TODO implement open request
