@@ -10,10 +10,10 @@ from s2gos.common.models import (
     ConformanceDeclaration,
     JobInfo,
     JobList,
+    JobResults,
     ProcessDescription,
     ProcessList,
     ProcessRequest,
-    JobResults,
 )
 from tests.client.helpers import MockTransport
 
