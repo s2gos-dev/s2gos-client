@@ -18,12 +18,12 @@ REQUIRED_ENUMS = {
 
 REQUIRED_MODELS = {
     "ApiError",
-    "ConfClasses",
+    "Capabilities",
+    "ConformanceDeclaration",
     "Format",
     "InputDescription",
     "JobInfo",
     "JobList",
-    "LandingPage",
     "Link",
     "Metadata",
     "Output",

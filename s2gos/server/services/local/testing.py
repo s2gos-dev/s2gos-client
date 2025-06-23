@@ -12,7 +12,7 @@ service = LocalService(
 )
 
 
-@service.process_info(
+@service.process(
     id="sleep_a_while",
     title="Sleep Processor",
     description=(
@@ -36,7 +36,7 @@ def sleep_a_while(
     return time.time() - t0
 
 
-@service.process_info(
+@service.process(
     id="primes_between",
     title="Prime Processor",
     description=(

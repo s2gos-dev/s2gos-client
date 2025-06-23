@@ -6,14 +6,14 @@ from unittest import TestCase
 
 from s2gos.client import Client
 from s2gos.common.models import (
-    ConfClasses,
+    Capabilities,
+    ConformanceDeclaration,
     JobInfo,
     JobList,
-    LandingPage,
+    JobResults,
     ProcessDescription,
     ProcessList,
     ProcessRequest,
-    ProcessResults,
 )
 from tests.client.helpers import MockTransport
 
@@ -33,24 +33,24 @@ class ClientTest(TestCase):
             result,
         )
 
-    def test_get_landing_page(self):
-        result = self.client.get_landing_page()
-        self.assertIsInstance(result, LandingPage)
+    def test_get_capabilities(self):
+        result = self.client.get_capabilities()
+        self.assertIsInstance(result, Capabilities)
 
-    def test_get_conformance_classes(self):
-        result = self.client.get_conformance_classes()
-        self.assertIsInstance(result, ConfClasses)
+    def test_get_conformance(self):
+        result = self.client.get_conformance()
+        self.assertIsInstance(result, ConformanceDeclaration)
 
     def test_get_processes(self):
         result = self.client.get_processes()
         self.assertIsInstance(result, ProcessList)
 
-    def test_get_process_description(self):
-        result = self.client.get_process_description(process_id="gobabeb_1")
+    def test_get_process(self):
+        result = self.client.get_process(process_id="gobabeb_1")
         self.assertIsInstance(result, ProcessDescription)
 
-    def test_execute(self):
-        result = self.client.execute(
+    def test_execute_process(self):
+        result = self.client.execute_process(
             process_id="gobabeb_1",
             request=ProcessRequest(
                 inputs={"bbox": [10, 20, 30, 40]},
@@ -63,14 +63,14 @@ class ClientTest(TestCase):
         result = self.client.get_jobs()
         self.assertIsInstance(result, JobList)
 
-    def test_dismiss(self):
-        result = self.client.dismiss("job_12")
+    def test_dismiss_job(self):
+        result = self.client.dismiss_job("job_12")
         self.assertIsInstance(result, JobInfo)
 
-    def test_get_status(self):
-        result = self.client.get_status("job_12")
+    def test_get_job(self):
+        result = self.client.get_job("job_12")
         self.assertIsInstance(result, JobInfo)
 
-    def test_get_result(self):
-        result = self.client.get_result("job_12")
-        self.assertIsInstance(result, ProcessResults)
+    def test_get_job_results(self):
+        result = self.client.get_job_results("job_12")
+        self.assertIsInstance(result, JobResults)

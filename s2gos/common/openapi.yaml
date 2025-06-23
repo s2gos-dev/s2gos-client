@@ -27,7 +27,7 @@ paths:
           * The endpoint for job monitoring (path /jobs).
 
         For more information, see [Section 7.2](https://docs.ogc.org/is/18-062/18-062.html#sc_landing_page).
-      operationId: getLandingPage
+      operationId: getCapabilities
       responses:
         "200":
           description: |-
@@ -38,7 +38,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/landingPage'
+                $ref: '#/components/schemas/capabilities'
             text/html:
               schema:
                 type: string
@@ -71,7 +71,7 @@ paths:
         |Dismiss|http://www.opengis.net/spec/ogcapi-processes-1/1.0/conf/dismiss|
 
         For more information, see [Section 7.4](https://docs.ogc.org/is/18-062/18-062.html#sc_conformance_classes).
-      operationId: getConformanceClasses
+      operationId: getConformance
       responses:
         "200":
           description: |-
@@ -84,7 +84,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/confClasses'
+                $ref: '#/components/schemas/conformanceDeclaration'
               example:
                 conformsTo:
                 - http://www.opengis.net/spec/ogcapi-processes/1.0/conf/core
@@ -128,7 +128,7 @@ paths:
         Implementations SHOULD consider supporting the OGC process description.
 
         For more information, see [Section 7.10](https://docs.ogc.org/is/18-062/18-062.html#sc_process_description).
-      operationId: getProcessDescription
+      operationId: getProcess
       parameters:
       - name: processID
         in: path
@@ -158,13 +158,15 @@ paths:
   /processes/{processID}/execution:
     post:
       tags:
-      - Execute
+      - ProcessRequest
+      - InlineValue
+      - JobInfo
       summary: execute a process.
       description: |
         Create a new job.
 
         For more information, see [Section 7.11](https://docs.ogc.org/is/18-062/18-062.html#sc_create_job).
-      operationId: execute
+      operationId: executeProcess
       parameters:
       - name: processID
         in: path
@@ -226,7 +228,7 @@ paths:
                 content:
                   application/json:
                     schema:
-                      $ref: '#/components/schemas/results'
+                      $ref: '#/components/schemas/jobResults'
               responses:
                 "200":
                   description: Results received successfully
@@ -259,13 +261,13 @@ paths:
   /jobs/{jobId}:
     get:
       tags:
-      - Status
+      - JobStatus
       summary: retrieve the status of a job
       description: |
         Shows the status of a job.
 
         For more information, see [Section 7.12](https://docs.ogc.org/is/18-062/18-062.html#sc_retrieve_status_info).
-      operationId: getStatus
+      operationId: getJob
       parameters:
       - name: jobId
         in: path
@@ -306,7 +308,7 @@ paths:
         Cancel a job execution and remove it from the jobs list.
 
         For more information, see [Section 13](https://docs.ogc.org/is/18-062/18-062.html#Dismiss).
-      operationId: dismiss
+      operationId: dismissJob
       parameters:
       - name: jobId
         in: path
@@ -342,13 +344,13 @@ paths:
   /jobs/{jobId}/results:
     get:
       tags:
-      - Result
+      - JobResults
       summary: retrieve the result(s) of a job
       description: |
         Lists available results of a job. In case of a failure, lists errors instead.
 
         For more information, see [Section 7.13](https://docs.ogc.org/is/18-062/18-062.html#sc_retrieve_job_results).
-      operationId: getResult
+      operationId: getJobResults
       parameters:
       - name: jobId
         in: path
@@ -362,7 +364,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/processResults'
+                $ref: '#/components/schemas/jobResults'
         "404":
           description: The requested URI was not found.
           content:
@@ -383,7 +385,7 @@ paths:
                 type: string
 components:
   schemas:
-    landingPage:
+    capabilities:
       required:
       - links
       type: object
@@ -415,7 +417,7 @@ components:
           type: string
       additionalProperties: true
       description: API error based on RFC 7807
-    confClasses:
+    conformanceDeclaration:
       required:
       - conformsTo
       type: object
@@ -489,7 +491,7 @@ components:
           - document
         subscriber:
           $ref: '#/components/schemas/subscriber'
-    processResults:
+    jobResults:
       type: object
       additionalProperties:
         $ref: '#/components/schemas/inlineOrRefValue'

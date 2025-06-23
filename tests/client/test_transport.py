@@ -9,7 +9,7 @@ import pytest
 
 from s2gos.client.exceptions import ClientException
 from s2gos.client.transport import DefaultTransport
-from s2gos.common.models import ApiError, ConfClasses
+from s2gos.common.models import ApiError, ConformanceDeclaration
 
 
 class DefaultTransportTest(TestCase):
@@ -29,7 +29,7 @@ class DefaultTransportTest(TestCase):
                 path_params={},
                 query_params={},
                 request=None,
-                return_types={"200": ConfClasses},
+                return_types={"200": ConformanceDeclaration},
                 error_types={"401": ApiError},
             )
             mock_request.assert_called_once_with(
@@ -39,7 +39,7 @@ class DefaultTransportTest(TestCase):
                 json=None,
             )
 
-        self.assertIsInstance(result, ConfClasses)
+        self.assertIsInstance(result, ConformanceDeclaration)
 
     def test_call_success_201(self):
         mock_response = Mock()
@@ -57,7 +57,7 @@ class DefaultTransportTest(TestCase):
                 path_params={},
                 query_params={},
                 request=None,
-                return_types={"201": ConfClasses},
+                return_types={"201": ConformanceDeclaration},
                 error_types={"401": ApiError},
             )
             mock_request.assert_called_once_with(
@@ -67,7 +67,7 @@ class DefaultTransportTest(TestCase):
                 json=None,
             )
 
-        self.assertIsInstance(result, ConfClasses)
+        self.assertIsInstance(result, ConformanceDeclaration)
 
     def test_call_success_no_return_type(self):
         mock_response = Mock()
@@ -116,6 +116,6 @@ class DefaultTransportTest(TestCase):
                     path_params={},
                     query_params={},
                     request=None,
-                    return_types={"200": ConfClasses},
+                    return_types={"200": ConformanceDeclaration},
                     error_types={"401": ApiError},
                 )

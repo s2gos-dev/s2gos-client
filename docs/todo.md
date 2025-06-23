@@ -56,8 +56,21 @@ Implement CLI commands
 
 ## Server implementation
 
-* **DONE**: Implement local service that can invoke any Python function
-* Implement Airflow-based service
+Local service
+
+- **DONE**: Implement local service that can invoke any Python function
+- Path `/`:
+  - Also provide a HTML version, support mimetype `text/html`
+  - The landing page provides links to the:
+    * The APIDefinition (no fixed path),
+    * The Conformance statements (path `/conformance`),
+    * The processes metadata (path `/processes`),
+    * The endpoint for job monitoring (path `/jobs`).
+  - Links should be absolute URL, hence we need `request: Request` as 1st function arg
+
+Airflow-based service
+
+- Implement Airflow-based service that connects to the Airflow web API
 
 ## Authentication
 
@@ -89,14 +102,14 @@ The output of `generators/gen_models` is not satisfying:
 1. Many generated classes are `RootModels` which are inconvenient for users.
 2. Basic openAPI constructs like `Schema` or `Reference` should not be  
    generated but reused from predefined ` BaseModel`s.
-3. Generated class names like `Exception` clash with predefined Python names.
-4. Some generated class names are rather unintuitive, e.g., 
+3. **DONE**: Generated class names like `Exception` clash with predefined Python names.
+4. **DONE**: Some generated class names are rather unintuitive, e.g., 
    `Execute` instead of `Request`.
-5. Generated JSON is too verbose. Avoid including `None` fields and 
+5. JSON generated from models is too verbose. Avoid including `None` fields and 
    fields that have default values.
 
-- Adjust `s2gos/common/openapi.yaml` to fix the above and/or
-- Configure `datamodel-code-generator` to fix the above and/or
+- **DONE**: Adjust `s2gos/common/openapi.yaml` to fix the above and/or
+- **DONE**: Configure `datamodel-code-generator` to fix the above and/or
 - Use [openapi-pydantic](https://github.com/mike-oakley/openapi-pydantic)
   - Use `openapi_pydantic.Schema`, `openapi_pydantic.Reference`, etc. in generated code
   - Use `openapi_pydantic.OpenAPI` for representing `s2gos/common/openapi.yaml` in 
