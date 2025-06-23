@@ -862,7 +862,7 @@ components:
           oneOf:
           - type: string
             format: url
-          - type: object
+          - $ref: '#/components/schemas/schema'
     metadata:
       type: object
       properties:

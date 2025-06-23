@@ -8,7 +8,7 @@ import panel as pn
 import param
 
 from s2gos.client import ClientException
-from s2gos.client.gui.js2panel import param_schema_to_widget
+from s2gos.client.gui.widget_factory import WidgetFactory
 from s2gos.common.models import (
     Format,
     JobInfo,
@@ -23,9 +23,9 @@ ExecuteProcessAction: TypeAlias = Callable[[str, ProcessRequest], JobInfo]
 GetProcessAction: TypeAlias = Callable[[str], ProcessDescription]
 
 
-class Submitter(pn.viewable.Viewer):
+class ProcessesForm(pn.viewable.Viewer):
     _processes = param.List(default=[], doc="List of process summaries")
-    _process_descriptions = param.Dict(default={}, doc="Dictionary of cached processes")
+    _processes_dict = param.Dict(default={}, doc="Dictionary of cached processes")
 
     def __init__(
         self,
@@ -85,12 +85,18 @@ class Submitter(pn.viewable.Viewer):
             on_click=self._on_save_as_request_clicked,
             disabled=True,
         )
+        self._request_button = pn.widgets.Button(
+            name="Get Request",
+            on_click=self._on_get_process_request,
+            disabled=True,
+        )
 
         action_panel = pn.Row(
             self._execute_button,
             self._open_button,
             self._save_button,
             self._save_as_button,
+            self._request_button,
         )
 
         self._inputs_panel = pn.Column()
@@ -117,12 +123,12 @@ class Submitter(pn.viewable.Viewer):
         if not process_id:
             process_markdown = "_No process selected._"
         else:
-            if process_id in self._process_descriptions:
-                process_description = self._process_descriptions[process_id]
+            if process_id in self._processes_dict:
+                process_description = self._processes_dict[process_id]
             else:
                 try:
                     process_description = self._on_get_process(process_id)
-                    self._process_descriptions[process_id] = process_description
+                    self._processes_dict[process_id] = process_description
                 except ClientException as e:
                     process_description = None
                     process_markdown = (
@@ -137,12 +143,14 @@ class Submitter(pn.viewable.Viewer):
         self._process_doc_markdown.object = process_markdown
         if not process_description:
             self._execute_button.disabled = True
+            self._request_button.disabled = True
             self._input_widgets = {}
             self._output_widgets = {}
         else:
             self._execute_button.disabled = False
+            self._request_button.disabled = False
             self._input_widgets = {
-                param_name: param_schema_to_widget(
+                param_name: WidgetFactory().get_widget_for_schema(
                     param_name,
                     input_description.schema_.model_dump(
                         mode="json", exclude_defaults=True
@@ -159,29 +167,10 @@ class Submitter(pn.viewable.Viewer):
         self._outputs_panel[:] = self._output_widgets.values()
 
     def _on_execute_button_clicked(self, _event: Any = None):
-        process_id = self._process_select.value
-        process_description = self._process_descriptions.get(process_id)
-        if process_description is None:
-            return
-        request = ProcessRequest(
-            inputs={
-                k: _serialize_for_json(v.value) for k, v in self._input_widgets.items()
-            },
-            outputs={
-                k: Output(
-                    format=Format(
-                        mediaType="application/json",
-                        encoding="UTF-8",
-                        schema=process_description.outputs[k].schema_,
-                    ),
-                    transmissionMode=TransmissionMode.value,
-                )
-                for k, v in self._output_widgets.items()
-            },
-        )
+        process_id, process_request = self._new_process_request()
         try:
             self._execute_button.disabled = True
-            _job_info = self._on_execute_process(process_id, request)
+            _job_info = self._on_execute_process(process_id, process_request)
             # TODO: Show status info in GUI
         except ClientException as e:
             # TODO: Show error in GUI
@@ -201,9 +190,41 @@ class Submitter(pn.viewable.Viewer):
         # TODO implement save request as
         pass
 
+    def _on_get_process_request(self, _event: Any = None):
+        # noinspection PyProtectedMember
+        from IPython import get_ipython
+
+        _, process_request = self._new_process_request()
+        var_name = "_request"
+        get_ipython().user_ns[var_name] = process_request
+
     def _update_buttons(self):
         # TODO implement action enablement
         pass
+
+    def _new_process_request(self) -> tuple[str, ProcessRequest]:
+        process_id = self._process_select.value
+        assert process_id is not None
+        process_description = self._processes_dict.get(process_id)
+        assert process_description is not None
+        return process_id, ProcessRequest(
+            inputs={
+                # TODO: This is not nice, see WidgetFactory
+                k: _serialize_for_json(v.value)
+                for k, v in self._input_widgets.items()
+            },
+            outputs={
+                k: Output(
+                    format=Format(
+                        mediaType="application/json",
+                        encoding="UTF-8",
+                        schema=v.schema_,
+                    ),
+                    transmissionMode=TransmissionMode.value,
+                )
+                for k, v in process_description.outputs.items()
+            },
+        )
 
 
 def _serialize_for_json(value: Any):

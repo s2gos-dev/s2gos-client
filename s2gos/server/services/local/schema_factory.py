@@ -23,8 +23,8 @@ class SchemaFactory:
         list: {"type": "array"},
         set: {"type": "array"},
         dict: {"type": "object"},
-        datetime.date: {"type": "boolean", "format": "date"},
-        datetime.datetime: {"type": "boolean", "format": "datetime"},
+        datetime.date: {"type": "string", "format": "date"},
+        datetime.datetime: {"type": "string", "format": "datetime"},
     }
 
     def __init__(
@@ -43,10 +43,14 @@ class SchemaFactory:
         self.is_return = is_return
 
     def get_schema(self) -> Schema:
+        schema_dict = self.get_schema_dict()
+        return Schema.model_validate(schema_dict)
+
+    def get_schema_dict(self) -> dict[str, Any]:
         schema_dict = self._annotation_to_schema_dict(self.annotation)
         if self.default is not ...:
-            schema_dict["default"] = self.default
-        return Schema.model_validate(schema_dict)
+            schema_dict["default"] = _serialize_for_json(self.default)
+        return schema_dict
 
     def _annotation_to_schema_dict(self, annotation: Annotation) -> dict[str, Any]:
         if annotation is Any or annotation is ...:
@@ -107,3 +111,9 @@ class SchemaFactory:
         raise ValueError(
             f"Unhandled annotation '{annotation}' for {item} of {self.fn_name!r}"
         )
+
+
+def _serialize_for_json(value):
+    if isinstance(value, datetime.date):
+        return value.isoformat()
+    return value

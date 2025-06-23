@@ -6,15 +6,12 @@ import inspect
 import time
 from abc import ABC, abstractmethod
 from logging import getLogger
-from pathlib import Path
-from typing import Any, Literal, Optional
+from typing import Any, Literal
 
 import requests
 import uri_template
 from pydantic import BaseModel
 
-from s2gos.client.config import ClientConfig
-from s2gos.client.defaults import DEFAULT_SERVER_URL
 from s2gos.client.exceptions import ClientException
 
 logger = getLogger("s2gos")
@@ -22,11 +19,6 @@ logger = getLogger("s2gos")
 
 class Transport(ABC):
     """Abstraction of the transport that calls the S2GOS web API."""
-
-    @property
-    @abstractmethod
-    def config(self) -> ClientConfig:
-        """The configuration."""
 
     @abstractmethod
     def call(
@@ -50,27 +42,9 @@ class Transport(ABC):
 class DefaultTransport(Transport):
     """The concrete S2GOS web API transport."""
 
-    def __init__(
-        self,
-        config_path: Optional[str | Path] = None,
-        user_name: Optional[str] = None,
-        access_token: Optional[str] = None,
-        server_url: Optional[str] = None,
-        debug: bool = False,
-    ):
-        default_config = ClientConfig.read(config_path=config_path)
-
-        self._config = ClientConfig(
-            user_name=user_name or default_config.user_name,
-            access_token=access_token or default_config.access_token,
-            server_url=server_url or default_config.server_url or DEFAULT_SERVER_URL,
-        )
-
+    def __init__(self, server_url: str, debug: bool = False):
+        self.server_url = server_url
         self.debug = debug
-
-    @property
-    def config(self) -> ClientConfig:
-        return self._config
 
     def call(
         self,
@@ -82,7 +56,7 @@ class DefaultTransport(Transport):
         return_types: dict[str, type | None],
         error_types: dict[str, type | None],
     ) -> Any:
-        url = f"{self.config.server_url}{uri_template.expand(path, **path_params)}"
+        url = f"{self.server_url}{uri_template.expand(path, **path_params)}"
 
         t0 = time.time()
         try:

@@ -8,10 +8,10 @@ from typing import Optional
 
 from s2gos.client import Client as GeneratedClient
 from s2gos.client import ClientException
-from s2gos.client.gui.jobstable import JobsTable
-from s2gos.client.gui.submitter import Submitter
+from s2gos.client.gui.jobs_form import JobsForm
+from s2gos.client.gui.processes_form import ProcessesForm
 from s2gos.client.transport import Transport
-from s2gos.common.models import JobInfo, JobList, ProcessList, ProcessRequest
+from s2gos.common.models import JobList, ProcessList
 
 
 class Client(GeneratedClient):
@@ -25,21 +25,21 @@ class Client(GeneratedClient):
         super().__init__(_transport=_transport, **config)
         self._update_interval = update_interval
         self._update_thread: Optional[threading.Thread] = None
-        self._submitter: Optional[Submitter] = None
-        self._jobs_table: Optional[JobsTable] = None
+        self._processes_form: Optional[ProcessesForm] = None
+        self._jobs_form: Optional[JobsForm] = None
 
-    def show_submitter(self):
-        if self._submitter is None:
-            self._submitter = Submitter(
+    def show_processes(self):
+        if self._processes_form is None:
+            self._processes_form = ProcessesForm(
                 *self._get_processes(),
                 on_get_process=self.get_process,
                 on_execute_process=self.execute_process,
             )
-        return self._submitter
+        return self._processes_form
 
     def show_jobs(self):
-        if self._jobs_table is None:
-            self._jobs_table = JobsTable(
+        if self._jobs_form is None:
+            self._jobs_form = JobsForm(
                 *self._get_jobs(),
                 on_cancel_job=self._cancel_job,
                 on_delete_job=self._delete_job,
@@ -53,7 +53,7 @@ class Client(GeneratedClient):
             )
             self._update_thread.start()
 
-        return self._jobs_table
+        return self._jobs_form
 
     def stop_updating(self):
         self._update_thread = None
@@ -69,19 +69,15 @@ class Client(GeneratedClient):
         # TODO: implement job restart
         print("Not implemented.")
 
-    # noinspection PyMethodMayBeStatic
-    def _get_job_result(self, job_id: str):
-        return self.get_job_results(job_id)
-
     def __delete__(self, instance):
         self._update_thread = None
-        self._jobs_table = None
+        self._jobs_form = None
 
     def _run_updater(self):
         while self._update_thread is not None:
             time.sleep(self._update_interval)
-            if self._jobs_table is not None:
-                self._jobs_table.set_job_list(*self._get_jobs())
+            if self._jobs_form is not None:
+                self._jobs_form.set_job_list(*self._get_jobs())
 
     def _get_processes(self) -> tuple[ProcessList, ClientException | None]:
         try:

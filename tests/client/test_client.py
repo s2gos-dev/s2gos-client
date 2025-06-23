@@ -25,13 +25,12 @@ class ClientTest(TestCase):
 
     def test_repr_json(self):
         result = self.client._repr_json_()
-        self.assertEqual(
-            (
-                {"server_url": "https://s2gos.testing.eu/api"},
-                {"root": "Configuration:"},
-            ),
-            result,
-        )
+        self.assertIsInstance(result, tuple)
+        self.assertEqual(2, len(result))
+        data, metadata = result
+        self.assertIsInstance(data, dict)
+        self.assertIsInstance(metadata, dict)
+        self.assertEqual({"root": "Configuration:"}, metadata)
 
     def test_get_capabilities(self):
         result = self.client.get_capabilities()

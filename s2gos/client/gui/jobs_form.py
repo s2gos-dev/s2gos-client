@@ -11,7 +11,6 @@ from pydantic import BaseModel
 
 from s2gos.client import ClientException
 from s2gos.common.models import (
-    InlineOrRefValue,
     JobInfo,
     JobList,
     JobResults,
@@ -21,7 +20,7 @@ from s2gos.common.models import (
 JobAction: TypeAlias = Callable[[str], Any]
 
 
-class JobsTable(pn.viewable.Viewer):
+class JobsForm(pn.viewable.Viewer):
     _jobs = param.List(default=[], doc="List of current jobs")
 
     def __init__(
