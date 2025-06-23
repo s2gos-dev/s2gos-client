@@ -38,7 +38,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/landingPage'
+                $ref: '#/components/schemas/capabilities'
             text/html:
               schema:
                 type: string
@@ -84,7 +84,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/confClasses'
+                $ref: '#/components/schemas/conformanceDeclaration'
               example:
                 conformsTo:
                 - http://www.opengis.net/spec/ogcapi-processes/1.0/conf/core
@@ -158,7 +158,9 @@ paths:
   /processes/{processID}/execution:
     post:
       tags:
-      - Execute
+      - ProcessRequest
+      - InlineValue
+      - JobInfo
       summary: execute a process.
       description: |
         Create a new job.
@@ -259,7 +261,7 @@ paths:
   /jobs/{jobId}:
     get:
       tags:
-      - Status
+      - JobStatus
       summary: retrieve the status of a job
       description: |
         Shows the status of a job.
@@ -342,7 +344,7 @@ paths:
   /jobs/{jobId}/results:
     get:
       tags:
-      - Result
+      - ProcessResults
       summary: retrieve the result(s) of a job
       description: |
         Lists available results of a job. In case of a failure, lists errors instead.
@@ -383,7 +385,7 @@ paths:
                 type: string
 components:
   schemas:
-    landingPage:
+    capabilities:
       required:
       - links
       type: object
@@ -415,7 +417,7 @@ components:
           type: string
       additionalProperties: true
       description: API error based on RFC 7807
-    confClasses:
+    conformanceDeclaration:
       required:
       - conformsTo
       type: object

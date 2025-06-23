@@ -9,10 +9,10 @@ from typing import Callable, Optional
 from fastapi.responses import JSONResponse
 
 from s2gos.common.models import (
-    ConfClasses,
+    Capabilities,
+    ConformanceDeclaration,
     JobInfo,
     JobList,
-    LandingPage,
     ProcessDescription,
     ProcessList,
     ProcessRequest,
@@ -40,16 +40,16 @@ class LocalService(Service):
         description: Optional[str] = None,
         executor: Optional[ThreadPoolExecutor | ProcessPoolExecutor] = None,
     ):
-        self.landing_page = LandingPage(title=title, description=description, links=[])
+        self.landing_page = Capabilities(title=title, description=description, links=[])
         self.executor = executor or ThreadPoolExecutor(max_workers=3)
         self.process_registry = ProcessRegistry()
         self.jobs: dict[str, Job] = {}
 
-    async def get_landing_page(self) -> LandingPage:
+    async def get_landing_page(self) -> Capabilities:
         return self.landing_page
 
-    async def get_conformance_classes(self) -> ConfClasses:
-        return ConfClasses(
+    async def get_conformance_classes(self) -> ConformanceDeclaration:
+        return ConformanceDeclaration(
             conformsTo=[
                 "http://www.opengis.net/spec/ogcapi-processes-1/1.0/conf/core",
                 "http://www.opengis.net/spec/ogcapi-processes-1/1.0/conf/"

@@ -6,10 +6,10 @@ from unittest import TestCase
 
 from s2gos.client import Client
 from s2gos.common.models import (
-    ConfClasses,
+    Capabilities,
+    ConformanceDeclaration,
     JobInfo,
     JobList,
-    LandingPage,
     ProcessDescription,
     ProcessList,
     ProcessRequest,
@@ -35,11 +35,11 @@ class ClientTest(TestCase):
 
     def test_get_landing_page(self):
         result = self.client.get_landing_page()
-        self.assertIsInstance(result, LandingPage)
+        self.assertIsInstance(result, Capabilities)
 
     def test_get_conformance_classes(self):
         result = self.client.get_conformance_classes()
-        self.assertIsInstance(result, ConfClasses)
+        self.assertIsInstance(result, ConformanceDeclaration)
 
     def test_get_processes(self):
         result = self.client.get_processes()
