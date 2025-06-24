@@ -7,7 +7,7 @@ import param
 from ipyleaflet import DrawControl, GeoJSON, Map
 
 
-class BoundingBoxSelector(pn.viewable.Viewer):
+class BboxSelector(pn.viewable.Viewer):
     value = param.List(
         bounds=(4, 4),
         default=None,
@@ -35,7 +35,7 @@ class BoundingBoxSelector(pn.viewable.Viewer):
 
         # Displayed value as text for feedback
         value_display = pn.widgets.StaticText(
-            name="Selected BBox", value=str(self.value)
+            name="Selected bbox", value=str(self.value)
         )
 
         self._panel = pn.Column(map_widget, value_display)

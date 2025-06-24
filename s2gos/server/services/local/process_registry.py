@@ -49,22 +49,22 @@ class ProcessRegistry:
 
         fn_name = f"{function.__module__}:{function.__qualname__}"
 
-        id_ = kwargs.pop("id", fn_name)
-        version = kwargs.pop("version", "0.0.0")
-        inputs = kwargs.pop("inputs", None) or {}
-        outputs = kwargs.pop("outputs", None) or {}
-        description = kwargs.pop("description", function.__doc__)
+        id_ = kwargs.pop("id", None) or fn_name
+        version = kwargs.pop("version", None) or "0.0.0"
+        input_schemas = kwargs.pop("inputs", None) or {}
+        output_schemas = kwargs.pop("outputs", None) or {}
+        description = kwargs.pop("description", None) or function.__doc__
 
         signature = inspect.signature(function)
-        if not inputs:
+        if not input_schemas:
             inputs = _generate_inputs(fn_name, signature)
         else:
-            inputs = _complete_inputs(fn_name, signature, inputs)
+            inputs = _complete_inputs(fn_name, signature, input_schemas)
 
-        if not outputs:
+        if not output_schemas:
             outputs = _generate_outputs(fn_name, signature.return_annotation)
         else:
-            outputs = _complete_outputs(fn_name, signature, outputs)
+            outputs = _complete_outputs(fn_name, signature, output_schemas)
 
         entry = ProcessRegistry.Entry(
             function,
@@ -93,21 +93,40 @@ def _generate_inputs(
 
 
 def _complete_inputs(
-    fn_name: str, signature: inspect.Signature, inputs: dict[str, InputDescription]
+    fn_name: str, signature: inspect.Signature, input_schemas: dict[str, Any]
 ):
-    assert isinstance(inputs, dict)
-    unknown_input_names = [k for k in inputs.keys() if k not in signature.parameters]
+    assert isinstance(input_schemas, dict)
+
+    unknown_input_names = [
+        k for k in input_schemas.keys() if k not in signature.parameters
+    ]
     if unknown_input_names:
         raise ValueError(f"Invalid input name(s): {', '.join(unknown_input_names)}")
-    _inputs = dict(inputs)
-    for param_name, param in signature.parameters.items():
-        if param_name not in inputs:
-            _inputs[param_name] = _generate_input(fn_name, param)
+
+    _inputs: dict[str, InputDescription] = {}
+    for param_name, parameter in signature.parameters.items():
+        if param_name not in input_schemas:
+            _inputs[param_name] = _generate_input(fn_name, parameter)
+        else:
+            input_schema_dict = input_schemas[param_name]
+            assert isinstance(input_schema_dict, dict)
+
+            schema_factory = _schema_factory_from_parameter(fn_name, parameter)
+            param_schema_dict = schema_factory.get_schema_dict()
+
+            merged_schema_dict = dict(param_schema_dict)
+            merged_schema_dict.update(input_schema_dict)
+
+            merged_schema = Schema.model_validate(merged_schema_dict)
+
+            _inputs[param_name] = InputDescription(schema=merged_schema)
+
     return _inputs
 
 
 def _generate_input(fn_name: str, parameter: inspect.Parameter) -> InputDescription:
-    return InputDescription(schema=_schema_from_parameter(fn_name, parameter))
+    schema_factory = _schema_factory_from_parameter(fn_name, parameter)
+    return InputDescription(schema=schema_factory.get_schema())
 
 
 def _generate_outputs(
@@ -125,11 +144,13 @@ def _generate_outputs(
 
 
 def _complete_outputs(
-    _fn_name: str, _signature: inspect.Signature, outputs: dict[str, OutputDescription]
+    _fn_name: str,
+    _signature: inspect.Signature,
+    output_schemas: dict[str, OutputDescription],
 ):
-    assert isinstance(outputs, dict)
+    assert isinstance(output_schemas, dict)
     # TODO: implement _complete_outputs()
-    return dict(outputs)
+    return dict(output_schemas)
 
 
 def _generate_output(
@@ -137,6 +158,17 @@ def _generate_output(
 ) -> OutputDescription:
     return OutputDescription(
         schema=_schema_from_return_annotation(fn_name, name, annotation)
+    )
+
+
+def _schema_factory_from_parameter(
+    fn_name: str, parameter: inspect.Parameter
+) -> SchemaFactory:
+    return SchemaFactory(
+        fn_name,
+        parameter.name,
+        _normalize_inspect_value(parameter.annotation, default=Any),
+        default=_normalize_inspect_value(parameter.default, default=...),
     )
 
 

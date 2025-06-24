@@ -22,39 +22,79 @@ GENERATOR_NAME = str(Path(__file__).name)
 CLIENT_PATH = S2GOS_PATH / "client" / "client.py"
 
 
+code_header = """
+
+from typing import Optional
+
+from s2gos.common.models import {{ model_imports }}
+
+from .config import ClientConfig
+from .defaults import DEFAULT_SERVER_URL
+from .transport import DefaultTransport, Transport
+
+
+class Client:
+    \"\"\"    
+    The S2GOS Client API.
+
+    Args:
+      config_path: Optional path of the configuration file to be loaded
+      server_url: Optional server URL
+      user_name: Optional username
+      user_name: Optional user access token
+      debug: Whether to output debug logs
+      _transport: Optional web API transport (for testing only).
+    \"\"\"
+
+    def __init__(
+        self,
+        *,
+        config_path: Optional[str] = None,
+        server_url: Optional[str] = None,
+        user_name: Optional[str] = None,
+        access_token: Optional[str] = None,
+        debug: bool = False,
+        _transport: Optional[Transport] = None,
+    ):
+        default_config = ClientConfig.read(config_path=config_path)
+        config = ClientConfig(
+            user_name=user_name or default_config.user_name,
+            access_token=access_token or default_config.access_token,
+            server_url=server_url or default_config.server_url or DEFAULT_SERVER_URL,
+        )
+        self._config = config
+        self._transport = (
+            DefaultTransport(server_url=config.server_url, debug=debug)
+            if _transport is None
+            else _transport
+        )
+
+    @property
+    def config(self) -> ClientConfig:
+        return self._config
+
+    def _repr_json_(self):
+        # noinspection PyProtectedMember
+        return self._config._repr_json_()
+
+{{ client_methods }}        
+"""
+
+
 def main():
     schema = load_openapi_schema(OPEN_API_PATH)
     models: set[str] = set()
-    code = generate_api_code(schema, models)
+    client_methods = generate_api_code(schema, models)
     model_list = ", ".join(sorted(models))
+
+    code = code_header
+    code = code.replace("{{ model_imports }}", model_list)
+    code = code.replace("{{ client_methods }}", client_methods)
 
     write_file(
         GENERATOR_NAME,
         CLIENT_PATH,
-        [
-            "from typing import Optional\n",
-            "\n",
-            f"from s2gos.common.models import {model_list}\n",
-            "from .transport import DefaultTransport, Transport",
-            "\n",
-            "class Client:\n",
-            f'{C_TAB}"""\n',
-            f"{C_TAB}The S2GOS Client API.\n",
-            "\n",
-            f"{C_TAB}Args:\n",
-            f"{C_TAB}{D_TAB}kwargs: Client configuration. See `DefaultTransport`.\n",
-            f"{C_TAB}{D_TAB}_transport: Optional web API transport (for testing only).\n",
-            f'{C_TAB}"""\n',
-            "\n",
-            f"{C_TAB}def __init__(self, *, "
-            f"_transport: Optional[Transport] = None, **kwargs):\n",
-            f"{C_TAB}{C_TAB}self._transport = "
-            "DefaultTransport(**kwargs) if _transport is None else _transport\n",
-            f"\n{C_TAB}def _repr_json_(self):\n",
-            f"{C_TAB}{C_TAB}# noinspection PyProtectedMember\n",
-            f"{C_TAB}{C_TAB}return self._transport.config._repr_json_()\n",
-            code,
-        ],
+        [code],
     )
 
 

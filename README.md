@@ -95,7 +95,7 @@ client.get_jobs()
 from s2gos.client.gui import Client
 
 client = Client()
-client.show_submitter()
+client.show_processes()
 client.show_jobs()
 ```
 

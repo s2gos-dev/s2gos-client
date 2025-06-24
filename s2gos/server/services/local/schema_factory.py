@@ -7,6 +7,8 @@ import datetime
 from types import GenericAlias, NoneType, UnionType
 from typing import Any, TypeAlias, Union, get_args, get_origin
 
+from pydantic import BaseModel
+
 from s2gos.common.models import Schema
 
 Annotation: TypeAlias = type | GenericAlias | UnionType | NoneType
@@ -23,8 +25,8 @@ class SchemaFactory:
         list: {"type": "array"},
         set: {"type": "array"},
         dict: {"type": "object"},
-        datetime.date: {"type": "boolean", "format": "date"},
-        datetime.datetime: {"type": "boolean", "format": "datetime"},
+        datetime.date: {"type": "string", "format": "date"},
+        datetime.datetime: {"type": "string", "format": "datetime"},
     }
 
     def __init__(
@@ -43,10 +45,14 @@ class SchemaFactory:
         self.is_return = is_return
 
     def get_schema(self) -> Schema:
+        schema_dict = self.get_schema_dict()
+        return Schema.model_validate(schema_dict)
+
+    def get_schema_dict(self) -> dict[str, Any]:
         schema_dict = self._annotation_to_schema_dict(self.annotation)
         if self.default is not ...:
-            schema_dict["default"] = self.default
-        return Schema.model_validate(schema_dict)
+            schema_dict["default"] = _serialize_for_json(self.default)
+        return schema_dict
 
     def _annotation_to_schema_dict(self, annotation: Annotation) -> dict[str, Any]:
         if annotation is Any or annotation is ...:
@@ -95,6 +101,10 @@ class SchemaFactory:
                     "additionalProperties": self._annotation_to_schema_dict(args[1]),
                 }
 
+        if issubclass(origin, BaseModel):
+            schema = origin.model_json_schema(mode="serialization")
+            return _sanitize_pydantic_json_schema(schema)
+
         schema = self.unary_schemas.get(origin)
         if schema is not None:
             return copy.deepcopy(schema) if schema is not None else {}
@@ -107,3 +117,67 @@ class SchemaFactory:
         raise ValueError(
             f"Unhandled annotation '{annotation}' for {item} of {self.fn_name!r}"
         )
+
+
+def _serialize_for_json(value):
+    if isinstance(value, datetime.date):
+        return value.isoformat()
+    return value
+
+
+def _sanitize_pydantic_json_schema(schema: dict[str, Any]) -> dict[str, Any]:
+    """
+    pydantic v2.11.4 creates the following schema from an attribute
+    declaration `name: Optional[str] = None`:
+    ```
+        {
+            'anyOf': [{'type': 'string'}, {'type': 'null'}],
+            'default': None,
+            'title': 'Name'
+        }
+    ```
+    We sanitize it into the following, less verbose, OpenAPI 3.0
+    compliant version:
+    ```
+        {
+            'type': 'string',
+            'nullable': True,
+            'default': None,
+            'title': 'Name'
+        }
+    ```
+    """
+    new_schema = copy.deepcopy(schema)
+    _sanitize_pydantic_json_schema_in_place(new_schema)
+    return new_schema
+
+
+def _sanitize_pydantic_json_schema_in_place(schema: dict[str, Any]) -> None:
+    any_of = schema.get("anyOf")
+    if isinstance(any_of, list):
+        type_spec = list(any_of)
+        try:
+            type_spec.remove({"type": "null"})
+        except ValueError:
+            pass
+        if len(type_spec) == 1:
+            schema.pop("anyOf")
+            schema.update(**type_spec[0], nullable=True)
+        # no other schema elements expected if "anyOf" exists
+        return
+    _sanitize_pydantic_json_schema_container(schema, "properties")
+    _sanitize_pydantic_json_schema_container(schema, "additionalProperties")
+    _sanitize_pydantic_json_schema_container(schema, "items")
+    _sanitize_pydantic_json_schema_container(schema, "additionalItems")
+
+
+def _sanitize_pydantic_json_schema_container(
+    schema: dict[str, Any], property_name: str
+) -> None:
+    schema_container = schema.get(property_name)
+    if isinstance(schema_container, dict):
+        for s in list(schema_container.values()):
+            _sanitize_pydantic_json_schema_in_place(s)
+    elif isinstance(schema_container, list):
+        for s in schema_container:
+            _sanitize_pydantic_json_schema_in_place(s)

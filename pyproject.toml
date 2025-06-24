@@ -8,8 +8,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "s2gos"
+version = "0.0.5"
 description = "A Python client for the ESA DTE-S2GOS synthetic scene generator service"
-dynamic = ["version", "readme"]
+dynamic = ["readme"]
 authors = [
   {name = "Norman Fomferra (Brockmann Consult GmbH)"},
   {name = "Tejas Morbagal Harish (Brockmann Consult GmbH)"}
@@ -81,6 +82,10 @@ dev = [
   "datamodel-code-generator",
   # UI dev with Panel
   "watchfiles",
+  # Data science
+  "dask",
+  "xarray",
+  "zarr",
 ]
 doc = [
   "mkdocs",

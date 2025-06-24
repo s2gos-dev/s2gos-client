@@ -24,9 +24,9 @@ def _patch_models():
 
 
 def _repr_base_model_as_json(self: BaseModel):
-    return self.model_dump(mode="json", by_alias=True, exclude_none=True), dict(
-        root=self.__class__.__name__ + " object:"
-    )
+    return self.model_dump(
+        mode="json", by_alias=True, exclude_none=True, exclude_defaults=True
+    ), dict(root=self.__class__.__name__ + " object:")
 
 
 _patch_models()

@@ -1,5 +1,10 @@
-## Changes in version 0.0.5 (in development)
+## Changes in version 0.0.6 (in development)
 
+
+## Changes in version 0.0.5 (not released)
+
+- Added a more realistic example in `create_datacube` to
+  `s2gos.server.services.local.testing.service`
 - Changed `s2gos/common/openapi.yaml`
   - renamed `exception` schema component into `apiError`
   - renamed `statusInfo` schema component into `jobInfo`

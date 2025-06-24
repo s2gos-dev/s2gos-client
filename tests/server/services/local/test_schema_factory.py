@@ -6,7 +6,7 @@ from unittest import TestCase
 
 import pytest
 
-from s2gos.common.models import Schema
+from s2gos.common.models import Link, Schema
 from s2gos.server.services.local.schema_factory import SchemaFactory
 from tests.helpers import BaseModelMixin
 
@@ -15,10 +15,16 @@ class SchemaFactoryTest(BaseModelMixin, TestCase):
     def assertSchemaOk(
         self, expected_schema_dict, annotation, default=..., is_return=False
     ):
-        schema = SchemaFactory(
+        self.maxDiff = None
+        factory = SchemaFactory(
             "f", "x", annotation, default=default, is_return=is_return
-        ).get_schema()
-        self.assertBaseModelEqual(Schema.model_validate(expected_schema_dict), schema)
+        )
+        schema_dict = factory.get_schema_dict()
+        self.assertDictEqual(expected_schema_dict, schema_dict)
+
+        expected_schema = Schema.model_validate(expected_schema_dict)
+        schema = factory.get_schema()
+        self.assertBaseModelEqual(expected_schema, schema)
 
     def test_with_default(self):
         self.assertSchemaOk({"type": "number", "default": 42.0}, float, default=42.0)
@@ -93,6 +99,50 @@ class SchemaFactoryTest(BaseModelMixin, TestCase):
 
     def test_optional(self):
         self.assertSchemaOk({"type": "string", "nullable": True}, Optional[str])
+
+    def test_base_model(self):
+        self.assertSchemaOk(
+            {
+                "type": "object",
+                "title": "Link",
+                "required": ["href"],
+                "properties": {
+                    "href": {
+                        "type": "string",
+                        "title": "Href",
+                    },
+                    "hreflang": {
+                        "type": "string",
+                        "title": "Hreflang",
+                        "default": None,
+                        "examples": ["en"],
+                        "nullable": True,
+                    },
+                    "rel": {
+                        "type": "string",
+                        "title": "Rel",
+                        "default": None,
+                        "examples": ["service"],
+                        "nullable": True,
+                    },
+                    "title": {
+                        "type": "string",
+                        "title": "Title",
+                        "default": None,
+                        "nullable": True,
+                    },
+                    "type": {
+                        "type": "string",
+                        "title": "Type",
+                        "default": None,
+                        "examples": ["application/json"],
+                        "nullable": True,
+                    },
+                },
+            },
+            Link,
+            is_return=True,
+        )
 
     def test_param_fail(self):
         with pytest.raises(

@@ -8,7 +8,14 @@ Given here are the issues that will be addressed next.
 * Move all source code into `src` folder.
 * Use either `uv` or `pixi` for package and environment management.
 * Align `ruff` settings with other [S2GOS repos](https://github.com/s2gos-dev).
-
+* We need three main packages in the end to avoid naming clashes:
+  - `s2gos_client` (now `s2gos.client`)
+  - `s2gos_models` (now `s2gos.common.models`)
+  - `s2gos_server` (now `s2gos.server`)
+* Find out and decide how to setup GitHub repo(s) for this
+  - One repository with all three packages in `src`
+  - One repository with three subdirectories
+  - Three repositories 
 
 ## Client implementation
 
@@ -27,7 +34,7 @@ Enhance the API Client
 
 Enhance the GUI Client
 
-- `show_jobs()` - show all jobs in a table and provide actions on job selection: 
+-  **DONE**: `show_jobs()` - show all jobs in a table and provide actions on job selection: 
   - **DONE**: use `Tabulator`
   - **DONE** Add an action row with actions applicable to the current table selection
   - Actions:
@@ -35,7 +42,7 @@ Enhance the GUI Client
     - **DONE**: ❌ delete successful/dismissed/failed job(s)
     - ♻️️ restart dismissed/failed job(s)
     - **DONE**: ⬇️ get job result(s)
-- `show_submitter()` - show a process selector any dynamically adjust 
+-  **DONE**: `show_processes()` - show a process selector any dynamically adjust 
   inputs and outputs
   - **DONE**: select process
   - **DONE**: render input widgets
@@ -44,7 +51,6 @@ Enhance the GUI Client
   - save request 
   - save-as request
   - show success/failure
-- `show_processes()`
 - `show_process(process_id: str = None, job_id: str = None, editable: bool = True)`
 - `show_job(job_id: str = None)`
 
@@ -99,7 +105,8 @@ Airflow-based service
 
 The output of `generators/gen_models` is not satisfying: 
 
-1. Many generated classes are `RootModels` which are inconvenient for users.
+1. Many generated classes are `RootModels` which are inconvenient for users, e.g.,
+   `Input` requires passing values with `root` attributes.
 2. Basic openAPI constructs like `Schema` or `Reference` should not be  
    generated but reused from predefined ` BaseModel`s.
 3. **DONE**: Generated class names like `Exception` clash with predefined Python names.

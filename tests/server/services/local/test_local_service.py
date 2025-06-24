@@ -13,7 +13,7 @@ class LocalServiceTest(TestCase):
     def get_service() -> LocalService:
         return LocalService(title="OGC API - Processes - Test Service")
 
-    def test_process_info_decorator(self):
+    def test_process_decorator(self):
         service = self.get_service()
 
         self.assertIsNone(service.process_registry.get_entry("foo"))

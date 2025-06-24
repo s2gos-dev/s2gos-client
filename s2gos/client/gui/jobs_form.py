@@ -11,7 +11,6 @@ from pydantic import BaseModel
 
 from s2gos.client import ClientException
 from s2gos.common.models import (
-    InlineOrRefValue,
     JobInfo,
     JobList,
     JobResults,
@@ -21,7 +20,7 @@ from s2gos.common.models import (
 JobAction: TypeAlias = Callable[[str], Any]
 
 
-class JobsTable(pn.viewable.Viewer):
+class JobsForm(pn.viewable.Viewer):
     _jobs = param.List(default=[], doc="List of current jobs")
 
     def __init__(
@@ -169,10 +168,12 @@ class JobsTable(pn.viewable.Viewer):
             if isinstance(results, JobResults):
                 results = results.root
             if isinstance(results, dict):
-                results = {
-                    k: (v.model_dump() if isinstance(v, BaseModel) else v)
-                    for k, v in results.items()
-                }
+                results = JsonDict(
+                    {
+                        k: (v.model_dump() if isinstance(v, BaseModel) else v)
+                        for k, v in results.items()
+                    }
+                )
             var_name = "_results"
             get_ipython().user_ns[var_name] = results
             return "✅ Stored results of {job} " + f"in variable **`{var_name}`**"
@@ -270,3 +271,8 @@ class JobsTable(pn.viewable.Viewer):
             "progress": job.progress or 0,
             "message": job.message or "-",
         }
+
+
+class JsonDict(dict):
+    def _repr_json_(self):
+        return self, {"root": "Results:"}
