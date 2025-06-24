@@ -9,7 +9,7 @@ import typer
 
 from s2gos.server.constants import S2GOS_SERVICE_ENV_VAR
 from s2gos.server.defaults import DEFAULT_HOST, DEFAULT_PORT
-from s2gos.version import VERSION
+from s2gos import __version__
 
 cli = typer.Typer()
 
@@ -17,7 +17,7 @@ cli = typer.Typer()
 @cli.command()
 def version():
     """Show server version."""
-    typer.echo(f"Version {VERSION}")
+    typer.echo(f"Version {__version__}")
 
 
 @cli.command()
