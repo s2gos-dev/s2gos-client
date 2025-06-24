@@ -6,6 +6,7 @@ import datetime
 import tempfile
 import time
 from pathlib import Path
+from typing import Optional
 
 from s2gos.common.models import Link
 from s2gos.server.services.local import LocalService, get_job_context
@@ -53,6 +54,10 @@ service = LocalService(
             "minimum": 1,
             "maximum": 10,
         },
+        "output_path": {
+            "title": "Output path",
+            "description": "Local output path or URI.",
+        },
     },
 )
 def create_datacube(
@@ -62,6 +67,7 @@ def create_datacube(
     start_date: str = "2025-01-01",
     end_date: str = "2025-02-01",
     periodicity: int = 1,
+    output_path: Optional[str] = None,
 ) -> Link:
     # dependencies only required for this operation
     import dask.array as da
@@ -107,11 +113,16 @@ def create_datacube(
         dataset[var_name] = xr.DataArray(
             da.zeros(shape=(time_size, y_size, x_size)), dims=("time", "lat", "lon")
         )
-    with tempfile.TemporaryDirectory(
-        prefix="datacube-", suffix=".zarr", delete=False
-    ) as path:
-        dataset.to_zarr(path)
-        return Link(href=Path(path).resolve().as_uri(), type="application/zarr")
+
+    if not output_path:
+        output_path = tempfile.mkdtemp(prefix="datacube-", suffix=".zarr")
+
+    dataset.to_zarr(output_path)
+    if "://" in output_path:
+        href = output_path
+    else:
+        href = Path(output_path).resolve().as_uri()
+    return Link(href=href, type="application/zarr")
 
 
 @service.process(
