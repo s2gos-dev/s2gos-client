@@ -27,7 +27,7 @@ Enhance the API Client
 
 Enhance the GUI Client
 
-- `show_jobs()` - show all jobs in a table and provide actions on job selection: 
+-  **DONE**: `show_jobs()` - show all jobs in a table and provide actions on job selection: 
   - **DONE**: use `Tabulator`
   - **DONE** Add an action row with actions applicable to the current table selection
   - Actions:
@@ -35,7 +35,7 @@ Enhance the GUI Client
     - **DONE**: ❌ delete successful/dismissed/failed job(s)
     - ♻️️ restart dismissed/failed job(s)
     - **DONE**: ⬇️ get job result(s)
-- `show_submitter()` - show a process selector any dynamically adjust 
+-  **DONE**: `show_processes()` - show a process selector any dynamically adjust 
   inputs and outputs
   - **DONE**: select process
   - **DONE**: render input widgets
@@ -44,7 +44,6 @@ Enhance the GUI Client
   - save request 
   - save-as request
   - show success/failure
-- `show_processes()`
 - `show_process(process_id: str = None, job_id: str = None, editable: bool = True)`
 - `show_job(job_id: str = None)`
 
@@ -99,7 +98,8 @@ Airflow-based service
 
 The output of `generators/gen_models` is not satisfying: 
 
-1. Many generated classes are `RootModels` which are inconvenient for users.
+1. Many generated classes are `RootModels` which are inconvenient for users, e.g.,
+   `Input` requires passing values with `root` attributes.
 2. Basic openAPI constructs like `Schema` or `Reference` should not be  
    generated but reused from predefined ` BaseModel`s.
 3. **DONE**: Generated class names like `Exception` clash with predefined Python names.
