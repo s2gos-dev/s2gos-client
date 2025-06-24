@@ -4,6 +4,6 @@
 
 from importlib.metadata import version
 
-__version__ = version("s2gos-client")
+__version__ = version("s2gos")
 
 __all__ = ["__version__"]

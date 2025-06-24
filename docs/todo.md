@@ -8,7 +8,14 @@ Given here are the issues that will be addressed next.
 * Move all source code into `src` folder.
 * Use either `uv` or `pixi` for package and environment management.
 * Align `ruff` settings with other [S2GOS repos](https://github.com/s2gos-dev).
-
+* We need three main packages in the end to avoid naming clashes:
+  - `s2gos_client` (now `s2gos.client`)
+  - `s2gos_models` (now `s2gos.common.models`)
+  - `s2gos_server` (now `s2gos.server`)
+* Find out and decide how to setup GitHub repo(s) for this
+  - One repository with all three packages in `src`
+  - One repository with three subdirectories
+  - Three repositories 
 
 ## Client implementation
 
