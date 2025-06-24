@@ -6,7 +6,7 @@ from unittest import TestCase
 
 import pytest
 
-from s2gos.common.models import Schema, Link
+from s2gos.common.models import Link, Schema
 from s2gos.server.services.local.schema_factory import SchemaFactory
 from tests.helpers import BaseModelMixin
 

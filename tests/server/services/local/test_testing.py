@@ -5,7 +5,7 @@
 from pathlib import Path
 from unittest import IsolatedAsyncioTestCase, TestCase
 
-from s2gos.common.models import InputDescription, ProcessDescription, ProcessList, Link
+from s2gos.common.models import InputDescription, Link, ProcessDescription, ProcessList
 from s2gos.server.services.local.testing import create_datacube
 from s2gos.server.services.local.testing import service as testing_service
 

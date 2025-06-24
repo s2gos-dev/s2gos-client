@@ -7,9 +7,9 @@ from typing import Optional
 
 import typer
 
+from s2gos import __version__
 from s2gos.server.constants import S2GOS_SERVICE_ENV_VAR
 from s2gos.server.defaults import DEFAULT_HOST, DEFAULT_PORT
-from s2gos import __version__
 
 cli = typer.Typer()
 
