@@ -2,6 +2,7 @@
 #  Permissions are hereby granted under the terms of the Apache 2.0 License:
 #  https://opensource.org/license/apache-2-0.
 
+import sys
 from pathlib import Path
 from unittest import IsolatedAsyncioTestCase, TestCase
 
@@ -24,7 +25,8 @@ class TestingFunctionsTest(TestCase):
         self.assertIsInstance(link, Link)
         self.assertIsInstance(link.href, str)
         self.assertTrue(link.href.startswith("file://"))
-        self.assertTrue(Path.from_uri(link.href).exists())
+        if sys.version_info >= (3, 13):
+            self.assertTrue(Path.from_uri(link.href).exists())
 
 
 class TestingServiceTest(IsolatedAsyncioTestCase):
