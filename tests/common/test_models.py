@@ -64,10 +64,7 @@ class ModelsTest(TestCase):
         json_repr = obj._repr_json_()
         self.assertEqual(
             (
-                {
-                    "bbox": [10.0, 20.0, 30.0, 40.0],
-                    "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
-                },
+                {"bbox": [10.0, 20.0, 30.0, 40.0]},
                 {"root": "Bbox object:"},
             ),
             json_repr,

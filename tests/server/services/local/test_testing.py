@@ -5,7 +5,7 @@
 from pathlib import Path
 from unittest import IsolatedAsyncioTestCase, TestCase
 
-from s2gos.common.models import InputDescription, ProcessDescription, ProcessList
+from s2gos.common.models import InputDescription, ProcessDescription, ProcessList, Link
 from s2gos.server.services.local.testing import create_datacube
 from s2gos.server.services.local.testing import service as testing_service
 
@@ -20,8 +20,11 @@ class TestingFunctionsTest(TestCase):
             "end_date": "2025-02-03",
             "periodicity": 1,
         }
-        path = create_datacube(**kwargs)
-        self.assertTrue(Path(path).exists())
+        link = create_datacube(**kwargs)
+        self.assertIsInstance(link, Link)
+        self.assertIsInstance(link.href, str)
+        self.assertTrue(link.href.startswith("file://"))
+        self.assertTrue(Path.from_uri(link.href).exists())
 
 
 class TestingServiceTest(IsolatedAsyncioTestCase):

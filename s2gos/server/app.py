@@ -45,3 +45,15 @@ async def log_request_duration(
     )
 
     return response
+
+
+class EndpointFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        # Suppress log if it's an access log for /jobs
+        return not (
+            record.name == "uvicorn.access" and "GET /jobs" in record.getMessage()
+        )
+
+
+# Apply the filter to the uvicorn.access logger
+logging.getLogger("uvicorn.access").addFilter(EndpointFilter())

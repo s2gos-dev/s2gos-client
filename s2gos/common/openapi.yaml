@@ -804,14 +804,7 @@ components:
           type: string
         format:
           type: string
-        default:
-          oneOf:
-          - type: boolean
-          - type: number
-          - type: integer
-          - type: string
-          - type: array
-          - type: object
+        default: {}
         nullable:
           type: boolean
           default: false
@@ -821,8 +814,8 @@ components:
         writeOnly:
           type: boolean
           default: false
-        example:
-          type: object
+        example: {}
+        examples: {}
         deprecated:
           type: boolean
           default: false
@@ -836,21 +829,12 @@ components:
     qualifiedValue:
       allOf:
       - $ref: '#/components/schemas/format'
-      - required:
+      - type: object
+        required:
         - value
-        type: object
         properties:
           value:
-            oneOf:
-            - type: string
-            - type: number
-            - type: integer
-            - type: boolean
-            - type: array
-              items:
-                - type: string
-            - type: object
-            - $ref: '#/components/schemas/bbox'
+            $ref: '#/components/schemas/inlineValue'
     format:
       type: object
       properties:
@@ -861,7 +845,7 @@ components:
         schema:
           oneOf:
           - type: string
-            format: url
+            format: uri
           - $ref: '#/components/schemas/schema'
     metadata:
       type: object
@@ -917,13 +901,19 @@ components:
           - http://www.opengis.net/def/crs/OGC/0/CRS84h
     inlineValue:
       oneOf:
+      - nullable: true
       - type: boolean
       - type: string
         format: binary
+      - type: string
+        format: uri
+      - type: string
+        format: date
+      - type: string
+        format: date-time
       - type: string
       - type: integer
       - type: number
       - type: array
       - type: object
-        nullable: true
       - $ref: '#/components/schemas/bbox'

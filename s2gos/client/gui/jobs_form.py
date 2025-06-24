@@ -1,7 +1,7 @@
 #  Copyright (c) 2025 by ESA DTE-S2GOS team and contributors
 #  Permissions are hereby granted under the terms of the Apache 2.0 License:
 #  https://opensource.org/license/apache-2-0.
-
+from types import MethodType
 from typing import Any, Callable, Optional, TypeAlias
 
 import pandas as pd
@@ -168,10 +168,12 @@ class JobsForm(pn.viewable.Viewer):
             if isinstance(results, JobResults):
                 results = results.root
             if isinstance(results, dict):
-                results = {
-                    k: (v.model_dump() if isinstance(v, BaseModel) else v)
-                    for k, v in results.items()
-                }
+                results = JsonDict(
+                    {
+                        k: (v.model_dump() if isinstance(v, BaseModel) else v)
+                        for k, v in results.items()
+                    }
+                )
             var_name = "_results"
             get_ipython().user_ns[var_name] = results
             return "✅ Stored results of {job} " + f"in variable **`{var_name}`**"
@@ -269,3 +271,8 @@ class JobsForm(pn.viewable.Viewer):
             "progress": job.progress or 0,
             "message": job.message or "-",
         }
+
+
+class JsonDict(dict):
+    def _repr_json_(self):
+        return self, {"root": "Results:"}

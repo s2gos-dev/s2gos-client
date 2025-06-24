@@ -5,7 +5,9 @@
 import datetime
 import tempfile
 import time
+from pathlib import Path
 
+from s2gos.common.models import Link
 from s2gos.server.services.local import LocalService, get_job_context
 
 service = LocalService(
@@ -60,7 +62,8 @@ def create_datacube(
     start_date: str = "2025-01-01",
     end_date: str = "2025-02-01",
     periodicity: int = 1,
-) -> str:
+) -> Link:
+    # dependencies only required for this operation
     import dask.array as da
     import numpy as np
     import xarray as xr
@@ -105,10 +108,10 @@ def create_datacube(
             da.zeros(shape=(time_size, y_size, x_size)), dims=("time", "lat", "lon")
         )
     with tempfile.TemporaryDirectory(
-        suffix="datacube-", prefix=".zarr", delete=False
+        prefix="datacube-", suffix=".zarr", delete=False
     ) as path:
         dataset.to_zarr(path)
-        return path
+        return Link(href=Path(path).resolve().as_uri(), type="application/zarr")
 
 
 @service.process(

@@ -81,6 +81,10 @@ dev = [
   "datamodel-code-generator",
   # UI dev with Panel
   "watchfiles",
+  # Data science
+  "dask",
+  "xarray",
+  "zarr",
 ]
 doc = [
   "mkdocs",

@@ -19,6 +19,7 @@ dependencies:
   - uri-template
   - uvicorn
   # Development Dependencies
+  - dask
   - datamodel-code-generator
   - isort
   - mkdocs
@@ -30,3 +31,5 @@ dependencies:
   - pytest-cov
   - ruff
   - watchfiles
+  - xcube
+  - zarr
