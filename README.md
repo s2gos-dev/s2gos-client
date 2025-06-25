@@ -3,6 +3,8 @@
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v0.json)](https://github.com/charliermarsh/ruff)
 [![GitHub License](https://img.shields.io/github/license/s2gos-dev/s2gos-client)](https://github.com/s2gos-dev/s2gos-client)
 
+**Project has been archived. Development continues in [s2gos-controller](https://github.com/s2gos-dev/s2gos-controller).**
+
 # DTE-S2GOS Python client
 
 A Python client for the ESA DTE-S2GOS synthetic scene generator service
